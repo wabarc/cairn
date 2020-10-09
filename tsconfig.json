@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": [
+      "es6",
+      "es2020",
+      "dom",
+      "dom.iterable"
+    ],
+    "newLine": "lf",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "allowJs": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "sourceMap": true
+  },
+  "files": [
+    "src/cairn.ts"
+  ],
+  "types": [
+    "src/types/cairn.d.ts"
+  ],
+  "include": ["src"],
+  "exclude": [
+    "coverage",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.js"
+  ]
+}

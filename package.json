@@ -1,0 +1,64 @@
+{
+  "name": "@wabarc/cairn",
+  "version": "1.0.0",
+  "description": "Node package and CLI tool for saving web page as single HTML file",
+  "main": "src/cairn.ts",
+  "types": "src/types/cairn.d.ts",
+  "scripts": {
+    "build": "tsc && ncc build",
+    "cli": "ts-node src/cli.ts",
+    "cli:watch": "nodemon --exec ts-node -- src/cli.ts",
+    "cli:install": "npm run build && npm install -g",
+    "format": "prettier --write '**/*.ts'",
+    "format:check": "prettier --check '**/*.ts'",
+    "lint": "eslint ./ --ext .ts",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "clean": "rm -rf ./dist"
+  },
+  "bin": {
+    "cairn": "dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wabarc/cairn.git"
+  },
+  "keywords": [
+    "archive",
+    "wayback-machine",
+    "cli",
+    "utils"
+  ],
+  "author": "Wayback Archiver",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/wabarc/cairn/issues"
+  },
+  "homepage": "https://github.com/wabarc/cairn#readme",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "commander": "^6.1.0",
+    "jsdom": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.8",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "@vercel/ncc": "^0.24.1",
+    "eslint": "^7.9.0",
+    "eslint-plugin-jest": "^24.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.4.2",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3",
+    "typescript-formatter": "^7.2.2"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  }
+}
