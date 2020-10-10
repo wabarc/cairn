@@ -51,14 +51,18 @@ export const createFileName = (uri: string): string => {
     return `${now}.${extension}`;
   }
 
-  const hostname = url.hostname.replace(/\./g, '-').replace(/www-/, '');
+  const hostname = url.hostname
+    .replace(/\./g, '-')
+    .replace(/www-/, '')
+    .replace(/^-+|-+$/gm, '');
   if (url.pathname.length < 1) {
     return `${now}-${hostname}.${extension}`;
   }
 
-  const pathname = url.pathname.replace(/\//g, '-').substring(0, -1);
+  const pathname = url.pathname.replace(/\//g, '-').replace(/^-+|-+$/gm, '');
+  const fullpath = `${now}-${hostname}-${pathname}`.replace(/^-+|-+$/gm, '');
 
-  return `${now}-${hostname}${pathname}.${extension}`;
+  return `${fullpath}.${extension}`;
 };
 
 export const convertToData = async (uri: string): Promise<string> => {
