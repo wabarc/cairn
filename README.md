@@ -24,13 +24,13 @@ npm install @wabarc/cairn
 ```
 
 ```javascript
-import { Cairn } from 'cairn';
+import { Cairn } from '@wabarc/cairn';
 
 const cairn = new Cairn();
 
 cairn
   .request({ url: url })
-  .options(this.opt)
+  .options({ userAgent: 'Cairn/1.0.0' })
   .archive()
   .then((webpage) => {
     console.log(url, webpage);
