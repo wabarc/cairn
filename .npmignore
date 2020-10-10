@@ -9,6 +9,7 @@ netci.groovy
 scripts
 src
 tests
+test
 Jakefile.js
 .eslintrc
 .eslintignore
@@ -36,3 +37,4 @@ Dockerfile
 .eslintrc.json
 .yarnrc
 tmp
+*.html
