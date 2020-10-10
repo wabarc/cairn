@@ -1,0 +1,45 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types: [ created ]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    name: Publish to NPM
+    steps:
+    - uses: actions/checkout@v2
+    # Setup .npmrc file to publish to npm
+    - uses: actions/setup-node@v2.1.2
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm install
+    - run: npm run test
+    - run: npm run build
+    - run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-gh:
+    runs-on: ubuntu-latest
+    name: Publish to GitHub
+    steps:
+    - uses: actions/checkout@v2
+    # Setup .npmrc file to publish to GitHub Packages
+    - uses: actions/setup-node@v2.1.2
+      with:
+        node-version: '12.x'
+        registry-url: 'https://npm.pkg.github.com'
+        # Defaults to the user or organization that owns the workflow file
+        scope: '@wabarc'
+    - run: npm install
+    - run: npm run test
+    - run: npm run build
+    - run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
