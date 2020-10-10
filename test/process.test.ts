@@ -224,9 +224,31 @@ describe('HTML', () => {
     expect(raw).toEqual(expect.stringContaining(`link`));
   });
 
+  test('convertOpenGraph', () => {
+    const testContent = `
+<html prefix="og: https://ogp.me/ns#">
+<head>
+<title>The Rock (1996)</title>
+<meta property="og:title" content="The Rock" />
+<meta property="og:type" content="video.movie" />
+<meta property="og:url" content="https://www.imdb.com/title/tt0117500/" />
+<meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
+</head>
+...
+</html>
+`;
+    dom = new JSDOM(testContent);
+    document = dom.window.document;
+
+    html.convertOpenGraph(document);
+
+    expect(document.querySelector('head > meta[property="title"]').content).toBe('The Rock');
+    expect(document.querySelector('head > meta[property="type"]').content).toBe('video.movie');
+  });
+
   it('should process icon link node', async () => {
     const testContent = `<link rel="icon" href="favicon.ico"></link>`;
-    document.getElementsByTagName('body')[0].innerHTML = testContent;
+    document.getElementsByTagName('head')[0].innerHTML = testContent;
 
     await html.processLinkNode(document.querySelector('link'), `http://localhost:${port}`);
     const raw = dom.serialize();

@@ -41,6 +41,7 @@ export class HTML {
     // - Convert data-src and data-srcset attribute in lazy image to src and srcset
     // - Convert relative URL into absolute URL
     // - Remove subresources integrity attribute from links
+    // - Convert Open Graph Metadata
     this.setContentSecurityPolicy(doc);
     this.applyConfiguration(doc);
     this.convertNoScriptToDiv(doc, true);
@@ -48,6 +49,7 @@ export class HTML {
     this.convertLazyImageAttrs(doc);
     this.convertRelativeURLs(doc, uri);
     this.removeLinkIntegrityAttr(doc);
+    this.convertOpenGraph(doc);
 
     // Find all nodes which might has subresource.
     // A node might has subresource if it fulfills one of these criteria :
@@ -57,6 +59,7 @@ export class HTML {
     let tagName;
     const nodes: HTMLElement[] = [];
     const tags = 'link,style,script,iframe,embed,object,img,picture,figure,video,audio,source';
+    const rels = ['icon', 'stylesheet', 'shortcut icon', 'mask-icon', 'apple-touch-icon-precomposed'];
     doc.querySelectorAll(tags).forEach(function (currentNode) {
       tagName = currentNode.tagName;
       if (typeof tagName !== 'string') {
@@ -65,7 +68,7 @@ export class HTML {
       switch (tagName.toLowerCase()) {
         case 'link': {
           const rel = currentNode.getAttribute('rel');
-          if (['icon', 'stylesheet'].includes(rel)) {
+          if (rels.includes(rel)) {
             nodes.push(currentNode);
           }
           break;
@@ -164,11 +167,12 @@ export class HTML {
     }
 
     // Append the new CSP
+    const head = doc.head;
     for (const policy of policies) {
       const meta = doc.createElement('meta');
       meta.httpEquiv = 'Content-Security-Policy';
       meta.content = policy;
-      doc.getElementsByTagName('head')[0].appendChild(meta);
+      head.prepend(meta);
     }
   }
 
@@ -386,6 +390,35 @@ export class HTML {
   removeLinkIntegrityAttr(doc: Document): void {
     doc.querySelectorAll('link[integrity]').forEach((e) => {
       e.removeAttribute('integrity');
+    });
+  }
+
+  /**
+   * Set og:title to title when it empty.
+   *
+   * @param {Document} doc JSDOM.window.document
+   * @api private
+   */
+  convertOpenGraph(doc: Document): void {
+    let meta, attr, content, property;
+    const title = doc.head.querySelector('title');
+
+    doc.querySelectorAll('head > meta').forEach((e) => {
+      attr = e.getAttribute('property');
+      content = e.getAttribute('content');
+      if (attr && typeof attr === 'string' && attr.startsWith('og:')) {
+        // real property
+        property = attr.substring(3);
+        meta = doc.createElement('meta');
+        meta.setAttribute('property', property);
+        meta.setAttribute('content', content);
+        (<any>e).parentNode.appendChild(meta);
+
+        // replace title if it empty
+        if (title && title.innerHTML.trim().length < 1 && property.toLowerCase() === 'title') {
+          title.textContent = content;
+        }
+      }
     });
   }
 
