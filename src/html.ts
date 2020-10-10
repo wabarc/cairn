@@ -10,8 +10,8 @@ import { JSDOM } from 'jsdom';
 export class HTML {
   // private opt: Record<string, unknown>;
   private rx: Record<'lazyImageSrc' | 'lazyImageSrcset' | 'B64DataURL' | 'srcsetURL', RegExp> = {
-    lazyImageSrc: /^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$/gm,
-    lazyImageSrcset: /(?<=srcset=").*?\.(jpg|jpeg|png|webp)(?=")/gm,
+    lazyImageSrc: /^\s*\S+(jpg|jpeg|png|webp|gif)\S*\s*$/gm,
+    lazyImageSrcset: /(jpg|jpeg|png|webp|gif)\s+\d/gm,
     // Exclude SVG, because SVG can have a meaningful image in under 133 bytes.
     B64DataURL: /data:(?!(image\/svg\+xml)).*?(;(.*?)),/gm,
     srcsetURL: /(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))/gm,
