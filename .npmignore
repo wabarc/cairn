@@ -15,6 +15,7 @@ Jakefile.js
 .eslintignore
 .editorconfig
 .failed-tests
+.prettierrc
 .git
 .git/
 .gitattributes
@@ -27,9 +28,11 @@ Jakefile.js
 .parallelperf.json
 .mailmap
 test.config
+jest.config.js
+tsconfig.json
+tslint.json
 package-lock.json
 yarn.lock
-CONTRIBUTING.md
 TEST-results.xml
 .dockerignore
 Dockerfile
@@ -38,3 +41,7 @@ Dockerfile
 .yarnrc
 tmp
 *.html
+.*.swp
+.npmrc
+npm-debug.log
+**/*.js.map
