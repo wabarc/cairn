@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2020-10-11
+
+### Changed
+- Remove `ncc` develop dependency.
+
+### Fixed
+- Redefine package entry point.
+
 ## [1.1.0] - 2020-10-11
 
 ### Added

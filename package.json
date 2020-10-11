@@ -1,11 +1,11 @@
 {
   "name": "@wabarc/cairn",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Node package and CLI tool for saving web page as single HTML file",
-  "main": "src/cairn.ts",
-  "types": "src/types/cairn.d.ts",
+  "main": "dist/cairn.js",
+  "types": "dist/cairn.d.ts",
   "scripts": {
-    "build": "tsc && ncc build",
+    "build": "tsc",
     "cli": "ts-node src/cli.ts",
     "cli:watch": "nodemon --exec ts-node -- src/cli.ts",
     "cli:install": "npm run build && npm install -g",
@@ -45,7 +45,6 @@
     "@types/node": "^14.11.8",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "@vercel/ncc": "^0.24.1",
     "eslint": "^7.9.0",
     "eslint-plugin-jest": "^24.0.2",
     "eslint-plugin-prettier": "^3.1.4",
