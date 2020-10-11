@@ -50,5 +50,3 @@ export interface Archiver {
   options(Options): this;
   archive(): Promise<any>;
 }
-
-declare module 'cairn';

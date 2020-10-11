@@ -27,7 +27,7 @@
     "src/cairn.ts"
   ],
   "types": [
-    "src/types/cairn.d.ts"
+    "src/types"
   ],
   "include": ["src"],
   "exclude": [
