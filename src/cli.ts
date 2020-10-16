@@ -77,6 +77,7 @@ class Handler {
     program.option('-o, --output <string>', 'path to save archival result');
 
     program.option('-u, --user-agent <string>', 'set custom user agent');
+    program.option('-t, --timeout <number>', 'maximum time (in second) request timeout');
 
     program
       .option('--no-js', 'disable JavaScript')
@@ -87,6 +88,7 @@ class Handler {
     program.parse(process.argv);
 
     if (program.userAgent) this.opt.userAgent = program.userAgent;
+    if (program.timeout) this.opt.timeout = parseInt(program.timeout);
 
     if (program.noJs) this.opt.disableJS = true;
     if (program.noCss) this.opt.disableCSS = true;

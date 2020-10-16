@@ -2,23 +2,22 @@ import axios, { AxiosResponse, ResponseType } from 'axios';
 import { isValidURL } from '.';
 
 export class HTTP {
-  private timeout = 5;
-  private headers: Record<string, unknown> = {};
+  private timeout = 60;
   private responseType: ResponseType = 'blob';
 
   constructor() {
-    this.headers['User-Agent'] =
-      this.headers['User-Agent'] ||
+    const ua =
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36';
+    if (!global.axios) {
+      global.axios = axios.create({
+        timeout: 1000 * this.timeout, // seconds
+        headers: { 'User-Agent': ua },
+      });
+    }
   }
 
   private async do(url: string): Promise<AxiosResponse> {
-    return axios({
-      method: 'get',
-      url: url,
-      params: {},
-      timeout: 1000 * this.timeout, // seconds
-      headers: this.headers,
+    return global.axios.get(url, {
       responseType: this.responseType,
     });
   }
@@ -28,7 +27,7 @@ export class HTTP {
       return this;
     }
 
-    this.headers[key] = val;
+    global.axios.defaults.headers[key] = val;
 
     return this;
   }
@@ -40,13 +39,13 @@ export class HTTP {
   }
 
   setOptions(args: { timeout: number }): this {
-    this.timeout = args.timeout || this.timeout;
+    if (args.timeout) global.axios.defaults.timeout = 1000 * args.timeout;
 
     return this;
   }
 
   async fetch(url: string): Promise<any> {
-    if (!isValidURL(url) || url.startsWith('data:')) {
+    if (url.startsWith('data:') || url.startsWith('about:') || !isValidURL(url)) {
       return;
     }
     return await this.do(url)
@@ -56,12 +55,13 @@ export class HTTP {
       })
       .catch((err) => {
         if (err.response) {
-          console.warn(`Fetch resources error, [status: ${err.status || 0}, message: ${err.message}]`);
+          console.warn(`Fetch resources error, [status: ${err.status || 0}, message: ${err.message}. url: ${url}]`);
         } else if (err.request) {
           console.warn(`Fetch resources error, [url: ${url}]`);
         } else {
-          console.warn(`Fetch resources error, [message: ${err.message}]`);
+          console.warn(`Fetch resources error, [message: ${err.message}. url: ${url}]`);
         }
+        return err;
       });
   }
 }

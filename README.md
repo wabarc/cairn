@@ -10,8 +10,8 @@
 
 ```
 
-Cairn is an npm package and CLI tool for saving the web page as a single HTML file.
-It is a Node.js version [Obelisk](https://github.com/go-shiori/obelisk) implement in TypeScript.
+Cairn is an npm package and CLI tool for saving the web page as a single HTML file,
+it is TypeScript implementation of [Obelisk](https://github.com/go-shiori/obelisk).
 
 ## Features
 
@@ -55,6 +55,7 @@ Options:
   -v, --version              output the current version
   -o, --output <string>      path to save archival result
   -u, --user-agent <string>  set custom user agent
+  -t, --timeout <number>     maximum time (in second) request timeout
   --no-js                    disable JavaScript
   --no-css                   disable CSS styling
   --no-embeds                remove embedded elements (e.g iframe)

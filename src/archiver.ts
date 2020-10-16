@@ -53,26 +53,30 @@ export class Archiver implements ArchiverImpl {
   async archive(): Promise<string> {
     return await (async () => {
       let webpage: Webpage;
-      let process = true;
+      let content = '';
+      let process = false;
 
       return await this.download(this.req.url)
         .then((response) => {
           // Check the type of the downloaded file.
           // If it's not HTML, just return it as it is.
-          const contentType = response.headers['content-type'] || '';
+          if (response.isAxiosError === true) {
+            return content;
+          }
+          const contentType = response.headers['content-type'] || response.headers['Content-Type'] || '';
           process = contentType.includes('text/html');
           webpage = { uri: this.req.url, content: response.data, contentType: contentType };
         })
         .then(async () => {
-          if (process) {
+          if (process === true) {
             // If it's HTML process it
-            webpage.content = await new HTML(this.opt).process(webpage);
+            content = await new HTML(this.opt).process(webpage);
           }
-          return webpage.content;
+          return content;
         })
         .catch((err) => {
           console.warn(err);
-          return webpage.content;
+          return content;
         });
     })();
   }
@@ -82,6 +86,10 @@ export class Archiver implements ArchiverImpl {
 
     if (this.opt.userAgent) {
       http.setHeader('User-Agent', this.opt.userAgent);
+    }
+
+    if (this.opt.timeout) {
+      http.setOptions({ timeout: this.opt.timeout });
     }
 
     return await http.fetch(url).catch((err) => Err(err));

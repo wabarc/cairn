@@ -59,7 +59,14 @@ export class HTML {
     let tagName;
     const nodes: HTMLElement[] = [];
     const tags = 'link,style,script,iframe,embed,object,img,picture,figure,video,audio,source';
-    const rels = ['icon', 'stylesheet', 'shortcut icon', 'mask-icon', 'apple-touch-icon-precomposed'];
+    const rels = [
+      'icon',
+      'stylesheet',
+      'shortcut icon',
+      'mask-icon',
+      'apple-touch-icon-precomposed',
+      'apple-touch-icon',
+    ];
     doc.querySelectorAll(tags).forEach(function (currentNode) {
       tagName = currentNode.tagName;
       if (typeof tagName !== 'string') {
@@ -422,30 +429,29 @@ export class HTML {
     });
   }
 
-  async processLinkNode(doc: HTMLElement, baseURL = ''): Promise<void> {
-    if (!doc.hasAttribute('href')) {
+  async processLinkNode(node: HTMLElement, baseURL = ''): Promise<void> {
+    if (!node.hasAttribute('href')) {
       return;
     }
 
-    const href = doc.getAttribute('href');
+    const href = node.getAttribute('href');
     if (!href || typeof href !== 'string') {
       return;
     }
 
-    const rel = doc.getAttribute('rel');
+    const rel = node.getAttribute('rel');
     if (typeof rel !== 'string') {
       return;
     }
 
     if (rel.indexOf('icon') > -1) {
-      return await this.processURLNode(doc, 'href', baseURL);
+      return await this.processURLNode(node, 'href', baseURL);
     }
 
     // Replace <link> to <style>
     if (['preload', 'stylesheet'].includes(rel.toLowerCase())) {
       await new URI().process(href, baseURL).then((data) => {
-        const styleNode = new JSDOM(`<style type="text/css">${data}</style>`);
-        doc.outerHTML = styleNode.window.document.head.querySelector('style').outerHTML;
+        node.outerHTML = `<style type="text/css">${data}</style>`;
       });
     }
 
@@ -522,8 +528,8 @@ export class HTML {
     }
 
     const newSets: string[] = [];
-    const match = [...decodeURI(srcset).matchAll(this.rx.srcsetURL)];
-    for (const parts of match) {
+    const matches = [...decodeURI(srcset).matchAll(this.rx.srcsetURL)];
+    for (const parts of matches) {
       const oldURL = parts[1];
       const targetWidth = parts[2];
       let newSet = oldURL;

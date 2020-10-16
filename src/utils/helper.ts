@@ -2,7 +2,7 @@
 import { HTTP } from './http';
 
 export const isValidURL = (uri: string): boolean => {
-  if (uri.length < 3) {
+  if (!uri || uri.length < 3) {
     return false;
   }
 
@@ -16,7 +16,6 @@ export const isValidURL = (uri: string): boolean => {
 };
 
 export const createAbsoluteURL = (uri: string, baseURL: string): string => {
-  uri = uri.trim();
   if (!uri || uri.length < 0 || !baseURL) {
     return uri;
   }

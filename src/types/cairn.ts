@@ -1,14 +1,12 @@
-// declare global {
-//   namespace NodeJS {
-//     interface Global {
-//       dom: {};
-//       window: {};
-//       document: {};
-//       head: {};
-//       body: {};
-//     }
-//   }
-// }
+import { AxiosInstance } from 'axios';
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      axios: AxiosInstance;
+    }
+  }
+}
 
 export declare type Assets = {
   data?: object;

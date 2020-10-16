@@ -10,18 +10,25 @@ export class CSS {
       const assetURL = createAbsoluteURL(u, n);
       const data = await convertToData(assetURL);
       if (data.length > 0) {
-        const html = node.outerHTML.replace(u, data);
-        node.outerHTML = html;
+        const regex = u.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+        node.outerHTML = node.outerHTML.replace(new RegExp(regex, 'g'), data);
       }
+    };
+
+    const transform = async (text: string, regexp: RegExp) => {
+      const matches = [...new Set(text.matchAll(regexp))];
+      for (const m of matches) {
+        if (m !== null && m.length > 0) {
+          await convert(m[0], uri);
+        }
+      }
+      return;
     };
 
     const inlineStyle = node.getAttribute('style');
     if (inlineStyle && typeof inlineStyle === 'string') {
       const regex = /(?<=url\((?!['"]?(?:data:)))\s*(['"]?)(.*)\1\)/gm;
-      const m = regex.exec(inlineStyle);
-      if (m !== null && m.length > 1) {
-        await convert(m[2], uri);
-      }
+      await transform(inlineStyle, regex);
       return;
     }
 
@@ -34,10 +41,8 @@ export class CSS {
     block = block.replace(/['|"]\)/gm, ')');
 
     const regex = /(?<=url\().*?(?=\))/gm;
-    const m = regex.exec(block);
-    if (m !== null && m.length > 0) {
-      await convert(m[0], uri);
-    }
+    await transform(block, regex);
+
     return;
   }
 }
