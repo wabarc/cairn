@@ -4,16 +4,13 @@ on:
   push:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-  release:
-    types: [ created ]
 
 jobs:
-  publish-npm:
+  prepare:
     runs-on: ubuntu-latest
-    name: Publish to NPM
+    name: Prepare
     steps:
     - uses: actions/checkout@v2
-    # Setup .npmrc file to publish to npm
     - uses: actions/setup-node@v2.1.2
       with:
         node-version: '12.x'
@@ -21,13 +18,42 @@ jobs:
     - run: npm install
     - run: npm run test
     - run: npm run build
-    - run: npm publish --access public
+    - run: npm run cli:install
+    - run: cairn -h
+    - run: rm -rf node_modules/
+    - name: Upload package
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: .
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    name: Publish to NPM
+    needs: prepare
+    steps:
+    - uses: actions/checkout@v2
+    # Setup .npmrc file to publish to npm
+    - uses: actions/setup-node@v2.1.2
+      with:
+        node-version: '12.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Download math result from prepare job
+      uses: actions/download-artifact@v2
+      with:
+        name: package
+        path: package
+    - name: Checkout package directory and publish
+      run: |
+        cd package
+        npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-gh:
     runs-on: ubuntu-latest
     name: Publish to GitHub
+    needs: prepare
     steps:
     - uses: actions/checkout@v2
     # Setup .npmrc file to publish to GitHub Packages
@@ -37,9 +63,14 @@ jobs:
         registry-url: 'https://npm.pkg.github.com'
         # Defaults to the user or organization that owns the workflow file
         scope: '@wabarc'
-    - run: npm install
-    - run: npm run test
-    - run: npm run build
-    - run: npm publish
+    - name: Download math result from prepare job
+      uses: actions/download-artifact@v2
+      with:
+        name: package
+        path: package
+    - name: Checkout package directory and publish
+      run: |
+        cd package
+        npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
