@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2020-10-16
+
+### Added
+- Add timeout option support.
+
+### Changed
+- Refine testing workflow.
+
 ## [1.1.2] - 2020-10-11
 
 ### Changed
