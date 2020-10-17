@@ -55,11 +55,13 @@ export class HTTP {
       })
       .catch((err) => {
         if (err.response) {
-          console.warn(`Fetch resources error, [status: ${err.status || 0}, message: ${err.message}. url: ${url}]`);
+          console.warn(
+            `Cairn: fetch resource failed, [status: ${err.status || 0}, message: ${err.message}, url: ${url}]`,
+          );
         } else if (err.request) {
-          console.warn(`Fetch resources error, [url: ${url}]`);
+          console.warn(`Cairn: fetch resource failed, [url: ${url}, message: error request.]`);
         } else {
-          console.warn(`Fetch resources error, [message: ${err.message}. url: ${url}]`);
+          console.warn(`Cairn: fetch resource failed, [message: ${err.message}, url: ${url}]`);
         }
         return err;
       });

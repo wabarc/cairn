@@ -63,6 +63,9 @@ export class Archiver implements ArchiverImpl {
           if (response.isAxiosError === true) {
             return content;
           }
+          if (!response.headers) {
+            return content;
+          }
           const contentType = response.headers['content-type'] || response.headers['Content-Type'] || '';
           process = contentType.includes('text/html');
           webpage = { uri: this.req.url, content: response.data, contentType: contentType };
