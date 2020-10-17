@@ -2,7 +2,7 @@ import { Options, Webpage } from './types';
 import { removeChild, isValidURL, createAbsoluteURL, convertToData } from './utils';
 import { CSS } from './css';
 import { URI } from './uri';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 
 /**
  * @see https://html.spec.whatwg.org/multipage/semantics.html
@@ -30,7 +30,8 @@ export class HTML {
    */
   async process(page: Webpage): Promise<string> {
     const { content, uri } = page;
-    const dom = new JSDOM(content);
+    const virtualConsole = new VirtualConsole().on('jsdomError', (e) => console.log('JSDOM', e));
+    const dom = new JSDOM(content, { virtualConsole });
     const doc = dom.window.document;
 
     // Prepare documents by doing these steps :
