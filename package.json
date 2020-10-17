@@ -1,6 +1,6 @@
 {
   "name": "@wabarc/cairn",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Node package and CLI tool for saving web page as single HTML file",
   "main": "dist/cairn.js",
   "types": "dist/cairn.d.ts",
@@ -14,7 +14,7 @@
     "lint": "eslint ./ --ext .ts",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "prepub": "npm run clean; npm run format; npm run lint; npm run cli:install",
+    "prepub": "npm run clean; npm run format; npm run lint; npm run cli:install && cairn -h",
     "clean": "rm -rf ./dist; rm -rf *.html"
   },
   "bin": {
