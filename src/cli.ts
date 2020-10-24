@@ -67,11 +67,12 @@ class Handler {
 
   private parser() {
     const program = new Command();
+    const version = process.env.npm_package_version || '0.0.1';
 
     program
       .name('cairn')
       .usage('[options] url1 [url2]...[urlN]')
-      .version('1.0.0', '-v, --version', 'output the current version')
+      .version(version, '-v, --version', 'output the current version')
       .description('CLI tool for saving web page as single HTML file');
 
     program.option('-o, --output <string>', 'path to save archival result');

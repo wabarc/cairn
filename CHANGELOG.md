@@ -6,7 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.2] - 2020-10-16
+## [1.3.0] - 2020-10-24
+
+### Added
+- Clean `utm_*` queries.
+
+### Fixed
+- Fix `decodeURI` error.
+
+## [1.2.1] - 2020-10-17
+
+### Fixed
+- Handle JSDOM error.
+
+## [1.2.0] - 2020-10-16
 
 ### Added
 - Add timeout option support.
