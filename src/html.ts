@@ -354,8 +354,11 @@ export class HTML {
     const convert = (node, attrName: string) => {
       const oriURI = node.getAttribute(attrName);
       if (typeof oriURI === 'string') {
-        const newVal: string = createAbsoluteURL(oriURI, url);
-        node.setAttribute(attrName, decodeURI(newVal));
+        let newVal: string = createAbsoluteURL(oriURI, url);
+        try {
+          newVal = decodeURI(newVal);
+        } catch (_) {}
+        node.setAttribute(attrName, newVal);
       }
     };
 
@@ -383,7 +386,11 @@ export class HTML {
         srcset = currentNode.getAttribute('srcset');
         if (typeof srcset === 'string') {
           newSrcset = createAbsoluteURL(srcset, url);
-          currentNode.setAttribute('srcset', decodeURI(newSrcset));
+          try {
+            currentNode.setAttribute('srcset', decodeURI(newSrcset));
+          } catch (_) {
+            continue;
+          }
         }
       }
     }
@@ -523,30 +530,34 @@ export class HTML {
       await this.processURLNode(node, 'poster', baseURL);
     }
 
-    const srcset = node.getAttribute('srcset');
+    let srcset = node.getAttribute('srcset');
     if (!srcset || typeof srcset !== 'string' || srcset.trim().length < 1) {
       return;
     }
 
-    const newSets: string[] = [];
-    const matches = [...decodeURI(srcset).matchAll(this.rx.srcsetURL)];
-    for (const parts of matches) {
-      const oldURL = parts[1];
-      const targetWidth = parts[2];
-      let newSet = oldURL;
+    try {
+      srcset = decodeURI(srcset);
+    } catch (_) {}
 
-      const assetURL = createAbsoluteURL(oldURL, baseURL);
+    const newSets: string[] = [];
+    const matches = [...srcset.matchAll(this.rx.srcsetURL)];
+    for (const parts of matches) {
+      if (!parts[1] || typeof parts[1] !== 'string') {
+        continue;
+      }
+      let newSet = parts[1];
+
+      const assetURL = createAbsoluteURL(parts[1], baseURL);
       const data = await convertToData(assetURL);
       if (typeof data === 'string' && data.length > -1) {
         newSet = data;
       }
 
-      newSet += targetWidth;
+      newSet += parts[2] || '';
       newSets.push(newSet);
     }
 
-    const newSrcset = newSets.join(',');
-    node.setAttribute('srcset', newSrcset);
+    node.setAttribute('srcset', newSets.join(','));
 
     return;
   }
