@@ -15,11 +15,9 @@ jobs:
       with:
         node-version: '12.x'
         registry-url: 'https://registry.npmjs.org'
-    - run: npm install
-    - run: npm run test
-    - run: npm run build
-    - run: npm run cli:install
-    - run: cairn -h
+    - run: yarn install
+    - run: yarn run test
+    - run: yarn run build
     - run: rm -rf node_modules/
     - name: Upload package
       uses: actions/upload-artifact@v2
@@ -46,7 +44,7 @@ jobs:
     - name: Checkout package directory and publish
       run: |
         cd package
-        npm publish --access public
+        yarn publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -71,6 +69,6 @@ jobs:
     - name: Checkout package directory and publish
       run: |
         cd package
-        npm publish
+        yarn publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,8 +26,8 @@ jobs:
     steps:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-    - run: npm install
-    - run: npm run test
+    - run: yarn install
+    - run: yarn run test
 
   release:
     name: Create and upload release
