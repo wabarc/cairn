@@ -16,7 +16,7 @@ export const isValidURL = (uri: string): boolean => {
 };
 
 export const createAbsoluteURL = (uri: string, baseURL: string): string => {
-  if (!uri || uri.length < 0 || !baseURL) {
+  if (!uri || uri.length < 1 || !baseURL) {
     return uri;
   }
 
@@ -24,19 +24,23 @@ export const createAbsoluteURL = (uri: string, baseURL: string): string => {
     return uri;
   }
 
-  if (!baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
-    return uri;
+  if (baseURL.startsWith('http://') || baseURL.startsWith('https://')) {
+    try {
+      const u = new URL(uri, baseURL);
+
+      return cleanURL(u.toString());
+    } catch (e) {
+      console.warn('Cairn warn:', e);
+      return cleanURL(baseURL);
+    }
   }
 
-  // todo: cleanup utm queries
-  try {
-    const u = new URL(uri, baseURL);
+  return cleanURL(uri);
+};
 
-    return u.toString();
-  } catch (e) {
-    console.warn(e);
-    return uri;
-  }
+const cleanURL = (uri: string): string => {
+  // Remove urm_* queries
+  return uri.replace(/utm(_[\w\-+=.*]+)/g, '');
 };
 
 export const createFileName = (uri: string): string => {
