@@ -1,17 +1,28 @@
-import { createAbsoluteURL, HTTP } from './utils';
+import { createAbsoluteURL, http } from './utils';
+import { css } from './css';
 
-export class URI {
-  async process(uri: string, baseURL: string): Promise<string> {
-    if (uri.trim().length < 1) {
-      return '';
+class URI {
+  async process(url: string, baseURL: string): Promise<string> {
+    let content = '';
+    if (url.trim().length < 1) {
+      return content;
     }
 
-    const assetURL = createAbsoluteURL(uri, baseURL);
-    const response = await new HTTP().fetch(assetURL);
+    const assetURL = createAbsoluteURL(url, baseURL);
+    const response = await http.fetch(assetURL);
     if (typeof response !== 'object' || !Object.prototype.hasOwnProperty.call(response, 'data')) {
-      return '';
+      return content;
+    }
+    content = response.data;
+
+    const contentType = response.headers['content-type'] || '';
+    if (contentType === 'text/css') {
+      content = await css.process(Buffer.from(content).toString(), baseURL);
     }
 
-    return response.data;
+    return content;
   }
 }
+
+const uri = new URI();
+export { uri };

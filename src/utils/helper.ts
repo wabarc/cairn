@@ -1,5 +1,5 @@
 // import fs from 'fs';
-import { HTTP } from './http';
+import { http } from './http';
 
 export const isValidURL = (uri: string): boolean => {
   if (!uri || uri.length < 3) {
@@ -73,7 +73,7 @@ export const convertToData = async (uri: string): Promise<string> => {
     return '';
   }
 
-  const resource = await new HTTP().setResponseType('arraybuffer').fetch(uri);
+  const resource = await http.setResponseType('arraybuffer').fetch(uri);
   if (!resource || typeof resource !== 'object' || !Object.prototype.hasOwnProperty.call(resource, 'data')) {
     return '';
   }

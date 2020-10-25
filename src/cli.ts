@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-
 import { Options } from './types/cairn';
 import { Command } from 'commander';
-import { Cairn } from './cairn';
+import { Archiver } from './archiver';
 import { isValidURL, createFileName } from './utils';
 import { statSync, writeFile } from 'fs';
 
@@ -15,7 +14,7 @@ class Handler {
     this.opt = {};
   }
 
-  main() {
+  async main() {
     const program = this.parser();
 
     if (this.url.length < 1) {
@@ -32,7 +31,7 @@ class Handler {
       filepath = program.output + '/';
     }
 
-    const output = (url: string, filename: string, content: string) => {
+    const output = async (url: string, filename: string, content: string) => {
       if (program.output === '-') {
         console.info(content);
       } else {
@@ -46,7 +45,7 @@ class Handler {
       }
     };
 
-    const cairn = new Cairn();
+    const cairn = new Archiver();
     for (const url of this.url) {
       if (!isValidURL(url)) {
         console.info(`${url} => request url is not specified\n`);
@@ -54,12 +53,21 @@ class Handler {
       }
       const filename = filepath + createFileName(url);
 
-      cairn
+      await cairn
         .request({ url: url })
         .options(this.opt)
         .archive()
-        .then((webpage) => {
-          output(url, filename, webpage);
+        .then(async (archived) => {
+          if (!archived.webpage || typeof archived.webpage.root !== 'function') {
+            return;
+          }
+
+          const html = archived.webpage.root() ? archived.webpage.root().html() : '';
+          if (!html) {
+            console.warn(`${url} => archival failure. [status: ${archived.status}]`);
+            return;
+          }
+          await output(url, filename, html || '');
         })
         .catch((err) => console.warn(`${url} => ${JSON.stringify(err)}`));
     }

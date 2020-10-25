@@ -1,5 +1,5 @@
-import { Archiver as ArchiverImpl, Options, Requests, Webpage } from './types/cairn';
-import { Err, HTTP, isValidURL } from './utils';
+import { Archiver as ArchiverImpl, Options, Requests, Archived } from './types/cairn';
+import { err, http, isValidURL } from './utils';
 import { HTML } from './html';
 
 export class Archiver implements ArchiverImpl {
@@ -23,7 +23,7 @@ export class Archiver implements ArchiverImpl {
   request(r: Requests): this {
     const { url } = r;
     if (!isValidURL(url)) {
-      Err('request url is not specified');
+      err('request url is not specified');
     }
 
     this.req.url = url;
@@ -50,43 +50,27 @@ export class Archiver implements ArchiverImpl {
    * @return {Promise} with string
    * @api public
    */
-  async archive(): Promise<string> {
-    return await (async () => {
-      let webpage: Webpage;
-      let content = '';
-      let process = false;
+  async archive(): Promise<Archived> {
+    const archived: Archived = { url: this.req.url, webpage: null, status: 400, contentType: 'text/html' };
+    const response = await this.download(this.req.url).catch((err) => err(err));
+    if (response.isAxiosError === true || !response.headers) {
+      return archived;
+    }
 
-      return await this.download(this.req.url)
-        .then((response) => {
-          // Check the type of the downloaded file.
-          // If it's not HTML, just return it as it is.
-          if (response.isAxiosError === true) {
-            return content;
-          }
-          if (!response.headers) {
-            return content;
-          }
-          const contentType = response.headers['content-type'] || response.headers['Content-Type'] || '';
-          process = contentType.includes('text/html');
-          webpage = { uri: this.req.url, content: response.data, contentType: contentType };
-        })
-        .then(async () => {
-          if (process === true) {
-            // If it's HTML process it
-            content = await new HTML(this.opt).process(webpage);
-          }
-          return content;
-        })
-        .catch((err) => {
-          console.warn(err);
-          return content;
-        });
-    })();
+    const contentType = response.headers['content-type'] || response.headers['Content-Type'] || '';
+    // Check the type of the downloaded file.
+    // If it's not HTML, just return it as it is.
+    if (contentType.includes('text/html') === true) {
+      // If it's HTML process it
+      archived.webpage = await new HTML(this.opt).process({ uri: this.req.url, html: response.data });
+    }
+    archived.status = response.status || archived.status;
+    archived.contentType = contentType;
+
+    return archived;
   }
 
   async download(url: string, referer?: string): Promise<any> {
-    const http = new HTTP();
-
     if (this.opt.userAgent) {
       http.setHeader('User-Agent', this.opt.userAgent);
     }
@@ -95,6 +79,6 @@ export class Archiver implements ArchiverImpl {
       http.setOptions({ timeout: this.opt.timeout });
     }
 
-    return await http.fetch(url).catch((err) => Err(err));
+    return await http.setResponseType('text').fetch(url);
   }
 }

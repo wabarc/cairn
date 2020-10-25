@@ -2,8 +2,7 @@ import { Archiver } from '../src/archiver';
 
 describe('Archiver', () => {
   const archiver = new Archiver();
-  // const requests = { url: 'https://www.google.com/' };
-  const requests = { url: 'https://en.wikipedia.org/wiki/Main_Page' };
+  const requests = { url: 'https://www.google.com/' };
 
   it('should called request function', () => {
     const request = archiver.request(requests);
@@ -14,10 +13,9 @@ describe('Archiver', () => {
     await archiver
       .request(requests)
       .archive()
-      .then((webpage) => {
-        // console.log(webpage.content);
-
-        expect(webpage.length > 1).toBe(true);
+      .then((archived) => {
+        expect(archived.url).toBe(requests.url);
+        expect(archived.status).toBe(200);
       });
   });
 });

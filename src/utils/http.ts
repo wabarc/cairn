@@ -1,9 +1,9 @@
-import axios, { AxiosResponse, ResponseType } from 'axios';
+import axios, { ResponseType } from 'axios';
 import { isValidURL } from '.';
 
-export class HTTP {
+class HTTP {
   private timeout = 60;
-  private responseType: ResponseType = 'blob';
+  private responseType: ResponseType = 'document';
 
   constructor() {
     const ua =
@@ -14,12 +14,6 @@ export class HTTP {
         headers: { 'User-Agent': ua },
       });
     }
-  }
-
-  private async do(url: string): Promise<AxiosResponse> {
-    return global.axios.get(url, {
-      responseType: this.responseType,
-    });
   }
 
   setHeader(key: string, val: string | number): this {
@@ -48,10 +42,11 @@ export class HTTP {
     if (url.startsWith('data:') || url.startsWith('about:') || !isValidURL(url)) {
       return;
     }
-    return await this.do(url)
-      .then((response) => {
-        // response keys: status, statusText, headers, config, request, data
-        return response;
+
+    // response keys: status, statusText, headers, config, request, data
+    return await global.axios
+      .get(url, {
+        responseType: this.responseType,
       })
       .catch((err) => {
         if (err.response) {
@@ -67,3 +62,6 @@ export class HTTP {
       });
   }
 }
+
+const http = new HTTP();
+export { http };

@@ -1,3 +1,3 @@
-export const Err = (msg: string): never => {
+export const err = (msg: string): never => {
   throw new Error(msg);
 };

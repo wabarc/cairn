@@ -1,8 +1,8 @@
-import { Webpage } from '../src/types/cairn';
 import { HTML } from '../src/html';
-import { CSS } from '../src/css';
+import { css } from '../src/css';
 import { server } from './server';
 import { JSDOM } from 'jsdom';
+import cheerio from 'cheerio';
 
 const content = `
 <!doctype html>
@@ -23,16 +23,16 @@ const content = `
 </body>
 </html>
 `;
-const webpage: Webpage = {
+const webpage: { uri: string; html: string } = {
   uri: 'https://www.google.com/',
-  content: content,
-  contentType: 'text/html',
+  html: content,
 };
 
+let $ = cheerio.load(content);
 let dom = new JSDOM(content);
 let document = dom.window.document;
 
-const html = new HTML();
+const html = new HTML({});
 const port = 9112;
 
 /**
@@ -58,10 +58,12 @@ describe('HTML', () => {
     meta.httpEquiv = 'Content-Security-Policy';
     meta.content = 'some rules; report-uri /cairn/';
     document.getElementsByTagName('head')[0].appendChild(meta);
+    $ = cheerio.load(dom.serialize());
 
     // Remove existing CSP
-    html.setContentSecurityPolicy(document);
-    expect(dom.serialize()).toEqual(expect.not.stringContaining('cairn'));
+    html.setContentSecurityPolicy($);
+    expect($.root().html()).toEqual(expect.not.stringContaining('cairn'));
+    expect($.root().html()).toEqual(expect.stringContaining('Content-Security-Policy'));
   });
 
   test('applyConfiguration', () => {
@@ -73,6 +75,10 @@ describe('HTML', () => {
     a.href = 'javascript::onclick();';
     a.style = 'color:blue;';
     document.getElementsByTagName('body')[0].appendChild(a);
+    const b = document.createElement('a');
+    b.href = 'javascript:;';
+    b.style = 'color:blue;';
+    document.getElementsByTagName('body')[0].appendChild(b);
 
     for (const tag of ['embed', 'iframe', 'object']) {
       const ele = document.createElement(tag);
@@ -85,11 +91,13 @@ describe('HTML', () => {
       document.getElementsByTagName('body')[0].appendChild(ele);
     }
 
+    $ = cheerio.load(dom.serialize());
+
     // Remove script tag
     html.opt = { disableJS: true, disableCSS: true, disableEmbeds: true, disableMedias: true };
-    html.applyConfiguration(document);
+    html.applyConfiguration($);
 
-    const raw = dom.serialize();
+    const raw = $.root().html();
     expect(raw).toEqual(expect.not.stringContaining('script'));
     expect(raw).toEqual(expect.not.stringContaining('javascript'));
     expect(raw).toEqual(expect.stringContaining('href="#"'));
@@ -118,9 +126,11 @@ describe('HTML', () => {
     noscript.append(a);
     document.getElementsByTagName('body')[0].appendChild(noscript);
 
+    $ = cheerio.load(dom.serialize());
+
     // Convert noscript
-    html.convertNoScriptToDiv(document);
-    const raw = dom.serialize();
+    html.convertNoScriptToDiv($);
+    const raw = $.root().html();
     expect(raw).toEqual(expect.not.stringContaining('<noscript>'));
     expect(raw).toEqual(expect.stringContaining('Mozilla'));
 
@@ -132,8 +142,10 @@ describe('HTML', () => {
     nscript.append(elem);
     document.getElementsByTagName('body')[0].appendChild(nscript);
 
-    html.convertNoScriptToDiv(document, true);
-    expect(dom.serialize()).toEqual(expect.stringContaining('data-cairn-noscript'));
+    $ = cheerio.load(dom.serialize());
+
+    html.convertNoScriptToDiv($, true);
+    expect($.root().html()).toEqual(expect.stringContaining('data-cairn-noscript'));
 
     // Clean test data
     noscript.remove();
@@ -145,11 +157,13 @@ describe('HTML', () => {
     const comment = document.createComment(text);
     document.getElementsByTagName('body')[0].appendChild(comment);
 
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+
+    const raw = $.root().html();
     expect(raw).toEqual(expect.stringContaining(text));
     // Remove comments
-    html.removeComments(document);
-    expect(dom.serialize()).toEqual(expect.not.stringContaining(text));
+    html.removeComments($);
+    expect($.root().html()).toEqual(expect.not.stringContaining(text));
   });
 
   test('convertLazyImageAttrs', () => {
@@ -172,18 +186,21 @@ describe('HTML', () => {
   <img alt="..." data-src="https://example.org/no-src-image.png" loading="lazy">
   <img src="" alt="..." data-src="https://example.org/image.png" loading="lazy">
 
-  <figure>
+  <figure class="css-mky99g">
     <img src="https://developer.mozilla.org/static/img/favicon144.png" alt="The beautiful MDN logo.">
   </figure>
-  	  `;
+`;
 
     document.getElementsByTagName('body')[0].innerHTML += images;
-    let raw = dom.serialize();
+
+    $ = cheerio.load(dom.serialize());
+
+    let raw = $.root().html();
     // Before assert
     expect(raw).toEqual(expect.stringContaining('data-src="https://example.org/image.png"'));
 
-    html.convertLazyImageAttrs(document);
-    raw = dom.serialize();
+    html.convertLazyImageAttrs($);
+    raw = $.root().html();
     expect(raw).toEqual(expect.stringContaining('src="data:image/svg+xml;base64'));
     expect(raw).toEqual(expect.not.stringContaining('data-src="https://example.org/image.png"'));
     expect(raw).toEqual(expect.stringContaining('src="https://example.org/image.png"'));
@@ -199,12 +216,13 @@ describe('HTML', () => {
   <div><div><div><embed type="image/svg" src="/media/cc0-videos/flower.png"></div></div></div>
         `;
     document.getElementsByTagName('body')[0].innerHTML += testContent;
-    let raw = dom.serialize();
 
-    expect(raw).toEqual(expect.not.stringContaining(oriURL));
+    $ = cheerio.load(dom.serialize());
 
-    html.convertRelativeURLs(document, oriURL);
-    raw = dom.serialize();
+    let raw = $.root().html();
+
+    html.convertRelativeURLs($, oriURL);
+    raw = $.root().html();
     expect(raw).toEqual(expect.stringContaining(`href="#"`));
     expect(raw).toEqual(expect.stringContaining(`${oriURL}media/cc0-videos/flower.png`));
     expect(raw).toEqual(expect.stringContaining(`${oriURL}style.css`));
@@ -218,8 +236,10 @@ describe('HTML', () => {
   `;
     document.getElementsByTagName('body')[0].innerHTML += testContent;
 
-    html.removeLinkIntegrityAttr(document);
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+
+    html.removeLinkIntegrityAttr($);
+    const raw = $.root().html();
     expect(raw).toEqual(expect.not.stringContaining(`${attr}`));
     expect(raw).toEqual(expect.stringContaining(`link`));
   });
@@ -228,7 +248,7 @@ describe('HTML', () => {
     const testContent = `
 <html prefix="og: https://ogp.me/ns#">
 <head>
-<title>The Rock (1996)</title>
+<title></title>
 <meta property="og:title" content="The Rock" />
 <meta property="og:type" content="video.movie" />
 <meta property="og:url" content="https://www.imdb.com/title/tt0117500/" />
@@ -237,21 +257,21 @@ describe('HTML', () => {
 ...
 </html>
 `;
-    dom = new JSDOM(testContent);
-    document = dom.window.document;
+    $ = cheerio.load(testContent);
 
-    html.convertOpenGraph(document);
+    html.convertOpenGraph($);
 
-    expect(document.querySelector('head > meta[property="title"]').content).toBe('The Rock');
-    expect(document.querySelector('head > meta[property="type"]').content).toBe('video.movie');
+    expect($('head > meta[property="type"]').attr('content')).toBe('video.movie');
+    expect($('head > title').text()).toBe('The Rock');
   });
 
   it('should process icon link node', async () => {
     const testContent = `<link rel="icon" href="favicon.ico"></link>`;
     document.getElementsByTagName('head')[0].innerHTML = testContent;
 
-    await html.processLinkNode(document.querySelector('link'), `http://localhost:${port}`);
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+    await html.processLinkNode($('link'), `http://localhost:${port}`);
+    const raw = $.root().html();
     expect(raw).toEqual(expect.stringMatching(/data:.*\/.*;base64/gm));
   });
 
@@ -260,8 +280,10 @@ describe('HTML', () => {
     const styleLink = `<link rel="stylesheet" href="http://localhost:${port}/${css}"></link>`;
     document.getElementsByTagName('body')[0].innerHTML = styleLink;
 
-    await html.processLinkNode(document.querySelector('link'), `http://localhost:${port}`);
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+
+    await html.processLinkNode($('link'), `http://localhost:${port}`);
+    const raw = $.root().html();
 
     expect(raw).toEqual(expect.not.stringMatching(`/${css}|link|stylesheet|href/gm`));
   });
@@ -271,8 +293,10 @@ describe('HTML', () => {
     const content = `<script src="http://localhost:${port}/${resource}"></script>`;
     document.getElementsByTagName('head')[0].innerHTML += content;
 
-    await html.processScriptNode(document.querySelector('script'), `http://localhost:${port}`);
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+
+    await html.processScriptNode($('script'), `http://localhost:${port}`);
+    const raw = $.root().html();
 
     expect(raw).toEqual(expect.not.stringMatching(`/${resource}|src/gm`));
     expect(raw).toEqual(expect.stringMatching(/<script>.*<\/script>/ms));
@@ -286,8 +310,10 @@ describe('HTML', () => {
       ele.data = resource;
       document.getElementsByTagName('body')[0].appendChild(ele);
 
-      await html.processEmbedNode(document.querySelector(tag), `http://localhost:${port}`);
-      const raw = dom.serialize();
+      $ = cheerio.load(dom.serialize());
+
+      await html.processEmbedNode($(tag), `http://localhost:${port}`);
+      const raw = $.root().html();
 
       expect(raw).toEqual(expect.not.stringMatching(`/${resource}/gm`));
       expect(raw).toEqual(expect.stringMatching(/data:.*\/.*;base64/gm));
@@ -303,8 +329,10 @@ describe('HTML', () => {
 </div>`;
     document.getElementsByTagName('body')[0].innerHTML = testContent;
 
-    await html.processMediaNode(document.querySelector('img'), `http://localhost:${port}`);
-    const raw = dom.serialize();
+    $ = cheerio.load(dom.serialize());
+
+    await html.processMediaNode($('img'), `http://localhost:${port}`);
+    const raw = $.root().html();
     expect(raw).toEqual(expect.not.stringMatching(/srcset="globe-700\.jpg/gm));
     expect(raw).toEqual(expect.stringMatching(/<img.*|data:.*\/.*;base64/gm));
   });
@@ -318,11 +346,15 @@ describe('HTML', () => {
     nscript.append(elem);
     document.getElementsByTagName('body')[0].appendChild(nscript);
 
-    html.convertNoScriptToDiv(document, true);
-    html.revertConvertedNoScript(document);
+    $ = cheerio.load(dom.serialize());
 
-    const raw = dom.serialize();
-    expect(raw).toEqual(expect.stringContaining('<noscript>'));
+    html.convertNoScriptToDiv($, true);
+    let raw = $.root().html();
+    expect(raw).toEqual(expect.not.stringContaining('<noscript'));
+
+    html.revertConvertedNoScript($);
+    raw = $.root().html();
+    expect(raw).toEqual(expect.stringContaining('<noscript'));
     expect(raw).toEqual(expect.stringContaining('Mozilla'));
   });
 
@@ -333,8 +365,9 @@ describe('HTML', () => {
     `;
     document.getElementsByTagName('body')[0].innerHTML = testContent;
 
-    const raw = dom.serialize();
-    webpage.content = raw;
+    $ = cheerio.load(dom.serialize());
+    const raw = $.root().html();
+    webpage.html = raw || '';
     webpage.uri = 'http://localhost:' + port;
 
     await html.process(webpage).then(() => {
@@ -344,18 +377,17 @@ describe('HTML', () => {
 });
 
 describe('CSS', () => {
-  const css = new CSS();
-
   it('should process url resource to base64 within inline style', async () => {
-    const testContent = `<link rel="icon" href="favicon.ico" style="margin:0;background-image:url('https://github.com/favicon.ico');"></link>`;
-    document.getElementsByTagName('body')[0].innerHTML = testContent;
+    const testContent = `<link rel="stylesheet" style="margin:0;background-image:url('https://github.com/favicon.ico');"></link>`;
+    document.getElementsByTagName('head')[0].innerHTML = testContent;
 
-    expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:*\/.*;base64/gm));
+    expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:.*\/.*;base64/gm));
 
-    await css.process(document.querySelector('link'));
+    $ = cheerio.load(dom.serialize());
+    const result = await css.process($('link').attr('style') || '', 'https://github.com');
 
-    // expect(dom.serialize()).toEqual(expect.stringMatching(/data:*\/.*;base64/gm));
-    expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
+    expect(result).toEqual(expect.stringMatching(/data:.*\/.*;base64/gm));
+    expect(result).toEqual(expect.stringMatching(/background-image:url/gm));
   });
 
   it('should process style url resource to base64 in head style block', async () => {
@@ -373,18 +405,20 @@ describe('CSS', () => {
 
     expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:image\/.*;base64/gm));
 
-    await css.process(document.querySelector('head'));
+    $ = cheerio.load(dom.serialize());
+    const result = await css.process($('style').html() || '', 'https://github.com');
 
-    expect(dom.serialize()).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
-    expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
+    expect(result).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
+    expect(result).toEqual(expect.stringMatching(/background-image:url/gm));
   });
 
   it('should process style url resource to base64 within element', async () => {
     expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:image\/.*;base64/gm));
 
-    await css.process(document.querySelector('body'));
+    $ = cheerio.load(dom.serialize());
+    const result = await css.process($('body > style').html() || '', 'https://github.com');
 
-    expect(dom.serialize()).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
-    expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
+    expect(result).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
+    expect(result).toEqual(expect.stringMatching(/background-image:url/gm));
   });
 });

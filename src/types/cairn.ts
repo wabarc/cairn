@@ -37,14 +37,15 @@ export declare type Options = {
   httpClient?: object;
 };
 
-export declare type Webpage = {
-  uri: string;
-  content: string;
+export declare type Archived = {
+  url: string;
+  webpage: cheerio.Root | null;
+  status: 200 | 400 | 401 | 403 | 404 | 500 | 502 | 503 | 504;
   contentType: 'text/html' | 'text/plain' | 'text/*';
 };
 
 export interface Archiver {
   request(Requests): this;
   options(Options): this;
-  archive(): Promise<any>;
+  archive(): Promise<Archived>;
 }

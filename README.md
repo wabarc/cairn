@@ -17,27 +17,6 @@ it is TypeScript implementation of [Obelisk](https://github.com/go-shiori/obelis
 
 ## Usage
 
-### As npm package
-
-```sh
-npm install @wabarc/cairn
-```
-
-```javascript
-import { Cairn } from '@wabarc/cairn';
-
-const cairn = new Cairn();
-
-cairn
-  .request({ url: url })
-  .options({ userAgent: 'Cairn/1.0.0' })
-  .archive()
-  .then((webpage) => {
-    console.log(url, webpage);
-  })
-  .catch((err) => console.warn(`${url} => ${JSON.stringify(err)}`));
-```
-
 ### As CLI tool
 
 ```sh
@@ -61,6 +40,89 @@ Options:
   --no-embeds                remove embedded elements (e.g iframe)
   --no-medias                remove media elements (e.g img, audio)
   -h, --help                 display help for command
+```
+
+### As npm package
+
+```sh
+npm install @wabarc/cairn
+```
+
+```javascript
+import { Cairn } from '@wabarc/cairn';
+// const cairn = require('@wabarc/cairn');
+
+const cairn = new Cairn();
+
+cairn
+  .request({ url: url })
+  .options({ userAgent: 'Cairn/2.0.0' })
+  .archive()
+  .then((archived) => {
+    console.log(archived.url, archived.webpage.html());
+  })
+  .catch((err) => console.warn(`${url} => ${JSON.stringify(err)}`));
+```
+
+#### Instance methods
+
+##### cairn#request({ url: string }): this
+##### cairn#options({}): this
+- userAgent?: string;
+- disableJS?: boolean;
+- disableCSS?: boolean;
+- disableEmbeds?: boolean;
+- disableMedias?: boolean;
+- timeout?: number;
+
+##### cairn#archive(): Promise<Archived>
+##### cairn#Archived
+- url: string;
+- webpage: cheerio.Root;
+- status: 200 | 400 | 401 | 403 | 404 | 500 | 502 | 503 | 504;
+- contentType: 'text/html' | 'text/plain' | 'text/*';
+
+#### Request Params
+
+##### request
+
+```javascript
+{
+  // `url` is archival target.
+  url: 'https://www.github.com'
+}
+```
+
+##### options
+
+```javascript
+{
+  userAgent: 'Cairn/2.0.0',
+
+  disableJS: true,
+  disableCSS: false,
+  disableEmbeds: false,
+  disableMedias: true,
+
+  timeout: 30
+}
+```
+
+#### Response Schema
+
+for v1.x:
+
+The `archive` method will return webpage body as string.
+
+for v2.x:
+
+```javascript
+{
+  url: 'https://github.com/',
+  webpage: cheerio.Root,
+  status: 200,
+  contentType: 'text/html'
+}
 ```
 
 ## License

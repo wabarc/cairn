@@ -1,43 +1,16 @@
-import { Options, Requests } from './types/cairn';
 import { Archiver } from './archiver';
+export { Archived } from './types';
 
 process.on('uncaughtException', (e) => {
   console.error(e);
 });
 
-class Cairn {
-  private arc: Archiver;
-
-  /**
-   * Initialize a new `Cairn`.
-   *
-   * @api public
-   */
-  constructor() {
-    this.arc = new Archiver();
-  }
-
-  request(r: Requests): this {
-    this.arc.request(r);
-
-    return this;
-  }
-
-  options(o: Options): this {
-    this.arc.options(o);
-    return this;
-  }
-
-  archive(): Promise<string> {
-    return this.arc.archive();
-  }
-}
-
-exports = module.exports = new Cairn();
-exports.cairn = exports;
-
-exports.Cairn = Cairn;
+class Cairn extends Archiver {}
 
 const cairn = new Cairn();
+
+exports = module.exports = cairn;
+exports.cairn = exports;
+exports.Cairn = Cairn;
 
 export { Cairn, cairn };
