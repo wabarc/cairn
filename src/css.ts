@@ -21,6 +21,9 @@ class CSS {
     for (const m of matches) {
       if (m !== null && m.length > 0) {
         const resourceURL = m[0];
+        if (resourceURL.startsWith('data:')) {
+          continue;
+        }
         const data = await convert(resourceURL, baseURL);
         rules.set(resourceURL, Buffer.from(data).toString());
       }

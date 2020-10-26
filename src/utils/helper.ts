@@ -70,12 +70,12 @@ export const createFileName = (uri: string): string => {
 
 export const convertToData = async (uri: string): Promise<string> => {
   if (!isValidURL(uri)) {
-    return '';
+    return uri;
   }
 
   const resource = await http.setResponseType('arraybuffer').fetch(uri);
   if (!resource || typeof resource !== 'object' || !Object.prototype.hasOwnProperty.call(resource, 'data')) {
-    return '';
+    return uri;
   }
 
   const encoded = Buffer.from(resource.data).toString('base64');
