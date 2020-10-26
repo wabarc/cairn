@@ -33,7 +33,7 @@ export class HTML {
     if (typeof html !== 'string' || typeof uri !== 'string') {
       err('Cannot process webpage.');
     }
-    const $ = cheerio.load(html);
+    const $ = cheerio.load(html, { decodeEntities: false });
 
     // Prepare documents by doing these steps :
     // - Set Content-Security-Policy to make sure no unwanted request happened
