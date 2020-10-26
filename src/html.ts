@@ -419,9 +419,8 @@ export class HTML {
 
           // replace title if it empty
           if (title.length < 1 && property.toLowerCase() === 'title') {
-            $('head')
-              .remove(<any>$('title'))
-              .append(`<title>${content}</title>`);
+            $('head > title').remove();
+            $('head').prepend(`<title>${content}</title>`);
           }
         }
       }
