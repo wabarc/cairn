@@ -13,17 +13,17 @@ class CSS {
       return data || '';
     };
 
-    style = style.replace(/\(['|"]/gm, '(').replace(/['|"]\)/gm, ')');
     const regexp = /(?<=url\().*?(?=\))/gm;
     const matches = style.matchAll(regexp);
 
     const rules = new Map();
     for (const m of matches) {
       if (m !== null && m.length > 0) {
-        const resourceURL = m[0];
+        let resourceURL = m[0];
         if (resourceURL.startsWith('data:')) {
           continue;
         }
+        resourceURL = resourceURL.replace(/['|"]/g, '').replace(/['|"]/g, '');
         const data = await convert(resourceURL, baseURL);
         rules.set(resourceURL, Buffer.from(data).toString());
       }
