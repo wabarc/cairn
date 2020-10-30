@@ -63,7 +63,7 @@ export const createFileName = (uri: string): string => {
   }
 
   const pathname = url.pathname.replace(/\//g, '-').replace(/^-+|-+$/gm, '');
-  const fullpath = `${now}-${hostname}-${pathname}`.replace(/^-+|-+$/gm, '');
+  const fullpath = `${now}-${hostname}-${pathname}`.replace(/^-+|-+$/gm, '').replace(/\.(htm|html)$/gm, '');
 
   return `${fullpath}.${extension}`;
 };

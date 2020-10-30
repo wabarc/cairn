@@ -45,6 +45,7 @@ export class HTML {
     // - Remove subresources integrity attribute from links
     // - Convert Open Graph Metadata
     // - Set page charset as utf-8
+    // - Set page source url
     this.setContentSecurityPolicy($);
     this.applyConfiguration($);
     this.convertNoScriptToDiv($, true);
@@ -54,6 +55,7 @@ export class HTML {
     this.removeLinkIntegrityAttr($);
     this.convertOpenGraph($);
     this.setCharset($);
+    this.setSource($, uri);
 
     // Find all nodes which might has subresource.
     // A node might has subresource if it fulfills one of these criteria :
@@ -441,6 +443,19 @@ export class HTML {
 
     // Append the new charset
     $('head').prepend(`<meta charset="utf-8">`);
+  }
+
+  /**
+   * Set source webpage url
+   *
+   * @param {Document} $ cheerio.Root
+   * @param {string} url
+   * @api private
+   */
+  setSource($: cheerio.Root, url: string): void {
+    // Append the source url meta
+    $('head').append(`<meta property="wayback:source:url" content="${url}">`);
+    console.log($('head[name="url"]').attr('content'))
   }
 
   async processStyleAttr(node: cheerio.Cheerio, baseURL = ''): Promise<void> {
