@@ -44,6 +44,7 @@ export class HTML {
     // - Convert relative URL into absolute URL
     // - Remove subresources integrity attribute from links
     // - Convert Open Graph Metadata
+    // - Set page charset as utf-8
     this.setContentSecurityPolicy($);
     this.applyConfiguration($);
     this.convertNoScriptToDiv($, true);
@@ -52,6 +53,7 @@ export class HTML {
     this.convertRelativeURLs($, uri);
     this.removeLinkIntegrityAttr($);
     this.convertOpenGraph($);
+    this.setCharset($);
 
     // Find all nodes which might has subresource.
     // A node might has subresource if it fulfills one of these criteria :
@@ -425,6 +427,20 @@ export class HTML {
         }
       }
     });
+  }
+
+  /**
+   * Set webpage charset as UTF-8
+   *
+   * @param {Document} $ cheerio.Root
+   * @api private
+   */
+  setCharset($: cheerio.Root): void {
+    // Remove existing charset in meta
+    $('meta[charset]').remove();
+
+    // Append the new charset
+    $('head').prepend(`<meta charset="utf-8">`);
   }
 
   async processStyleAttr(node: cheerio.Cheerio, baseURL = ''): Promise<void> {

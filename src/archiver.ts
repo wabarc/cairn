@@ -62,7 +62,10 @@ export class Archiver implements ArchiverImpl {
     // If it's not HTML, just return it as it is.
     if (contentType.includes('text/html') === true) {
       // If it's HTML process it
-      archived.webpage = await new HTML(this.opt).process({ uri: this.req.url, html: response.data });
+      archived.webpage = await new HTML(this.opt).process({
+        uri: this.req.url,
+        html: Buffer.from(response.data).toString(),
+      });
     }
     archived.status = response.status || archived.status;
     archived.contentType = contentType;
@@ -79,6 +82,6 @@ export class Archiver implements ArchiverImpl {
       http.setOptions({ timeout: this.opt.timeout });
     }
 
-    return await http.setResponseType('text').fetch(url);
+    return await http.setResponseType('arraybuffer').fetch(url);
   }
 }

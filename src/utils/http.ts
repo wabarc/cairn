@@ -1,9 +1,11 @@
 import axios, { ResponseType } from 'axios';
 import { isValidURL } from '.';
+import chardet from 'chardet';
+import iconv from 'iconv-lite';
 
 class HTTP {
   private timeout = 60;
-  private responseType: ResponseType = 'document';
+  private responseType: ResponseType = 'arraybuffer';
 
   constructor() {
     const ua =
@@ -12,6 +14,24 @@ class HTTP {
       global.axios = axios.create({
         timeout: 1000 * this.timeout, // seconds
         headers: { 'User-Agent': ua },
+        responseType: this.responseType,
+      });
+      global.axios.interceptors.response.use(function (response) {
+        if (response.data === undefined) {
+          return response;
+        }
+        let charset = response.headers['content-type'] || '';
+        if (!charset || typeof charset !== 'string' || charset.includes('charset') === false) {
+          charset = chardet.detect(Buffer.from(response.data));
+        }
+
+        // refer: https://github.com/ashtuchkin/iconv-lite/wiki/Supported-Encodings
+        const types = { big5: 'big5', gb2312: 'gb2312', gbk: 'gbk', gb18030: 'gb18030' };
+        for (const [type, encoding] of Object.entries(types)) {
+          response.data = charset.toLowerCase().includes(type) ? iconv.decode(response.data, encoding) : response.data;
+        }
+
+        return response;
       });
     }
   }
@@ -44,22 +64,18 @@ class HTTP {
     }
 
     // response keys: status, statusText, headers, config, request, data
-    return await global.axios
-      .get(url, {
-        responseType: this.responseType,
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.warn(
-            `Cairn: fetch resource failed, [status: ${err.status || 0}, message: ${err.message}, url: ${url}]`,
-          );
-        } else if (err.request) {
-          console.warn(`Cairn: fetch resource failed, [url: ${url}, message: error request.]`);
-        } else {
-          console.warn(`Cairn: fetch resource failed, [message: ${err.message}, url: ${url}]`);
-        }
-        return err;
-      });
+    return await global.axios.get(url).catch((err) => {
+      if (err.response) {
+        console.warn(
+          `Cairn: fetch resource failed, [status: ${err.status || 0}, message: ${err.message}, url: ${url}]`,
+        );
+      } else if (err.request) {
+        console.warn(`Cairn: fetch resource failed, [url: ${url}, message: error request.]`);
+      } else {
+        console.warn(`Cairn: fetch resource failed, [message: ${err.message}, url: ${url}]`);
+      }
+      return err;
+    });
   }
 }
 
