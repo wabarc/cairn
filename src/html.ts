@@ -455,7 +455,6 @@ export class HTML {
   setSource($: cheerio.Root, url: string): void {
     // Append the source url meta
     $('head').append(`<meta property="wayback:source:url" content="${url}">`);
-    console.log($('head[name="url"]').attr('content'))
   }
 
   async processStyleAttr(node: cheerio.Cheerio, baseURL = ''): Promise<void> {
