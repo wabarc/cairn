@@ -4,7 +4,7 @@ import { Options } from './types/cairn';
 import { Command } from 'commander';
 import { Cairn } from './cairn';
 import { isValidURL, createFileName } from './utils';
-import { statSync, writeFile } from 'fs';
+import { statSync, writeFileSync } from 'fs';
 
 class Handler {
   private opt: Options;
@@ -15,7 +15,7 @@ class Handler {
     this.opt = {};
   }
 
-  main() {
+  async main() {
     const program = this.parser();
 
     if (this.url.length < 1) {
@@ -36,13 +36,13 @@ class Handler {
       if (program.output === '-') {
         console.info(content);
       } else {
-        writeFile(filename, content, (err) => {
-          if (err) {
-            console.warn(`${url} => ${err}`);
-            return;
-          }
+        try {
+          writeFileSync(filename, content);
           console.info(`${url} => ${filename}`);
-        });
+        } catch (err) {
+          console.warn(`${url} => ${err.message}`);
+          return;
+        }
       }
     };
 
@@ -54,7 +54,7 @@ class Handler {
       }
       const filename = filepath + createFileName(url);
 
-      cairn
+      await cairn
         .request({ url: url })
         .options(this.opt)
         .archive()
