@@ -1,9 +1,9 @@
-import axios, { AxiosResponse, ResponseType } from 'axios';
+import axios, { ResponseType } from 'axios';
 import { isValidURL } from '.';
 
-export class HTTP {
+class HTTP {
   private timeout = 60;
-  private responseType: ResponseType = 'blob';
+  private responseType: ResponseType = 'arraybuffer';
 
   constructor() {
     const ua =
@@ -12,14 +12,9 @@ export class HTTP {
       global.axios = axios.create({
         timeout: 1000 * this.timeout, // seconds
         headers: { 'User-Agent': ua },
+        responseType: this.responseType,
       });
     }
-  }
-
-  private async do(url: string): Promise<AxiosResponse> {
-    return global.axios.get(url, {
-      responseType: this.responseType,
-    });
   }
 
   setHeader(key: string, val: string | number): this {
@@ -48,22 +43,22 @@ export class HTTP {
     if (url.startsWith('data:') || url.startsWith('about:') || !isValidURL(url)) {
       return;
     }
-    return await this.do(url)
-      .then((response) => {
-        // response keys: status, statusText, headers, config, request, data
-        return response;
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.warn(
-            `Cairn: fetch resource failed, [status: ${err.status || 0}, message: ${err.message}, url: ${url}]`,
-          );
-        } else if (err.request) {
-          console.warn(`Cairn: fetch resource failed, [url: ${url}, message: error request.]`);
-        } else {
-          console.warn(`Cairn: fetch resource failed, [message: ${err.message}, url: ${url}]`);
-        }
-        return err;
-      });
+
+    // response keys: status, statusText, headers, config, request, data
+    return await global.axios.get(url).catch((err) => {
+      if (err.response) {
+        console.warn(
+          `Cairn: fetch resource failed, [status: ${err.status || 0}, message: ${err.message}, url: ${url}]`,
+        );
+      } else if (err.request) {
+        console.warn(`Cairn: fetch resource failed, [url: ${url}, message: error request.]`);
+      } else {
+        console.warn(`Cairn: fetch resource failed, [message: ${err.message}, url: ${url}]`);
+      }
+      return err;
+    });
   }
 }
+
+const http = new HTTP();
+export { HTTP, http };

@@ -1,7 +1,7 @@
 import { Options, Webpage } from './types';
 import { removeChild, isValidURL, createAbsoluteURL, convertToData } from './utils';
-import { CSS } from './css';
-import { URI } from './uri';
+import { css } from './css';
+import { uri } from './uri';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
 /**
@@ -98,17 +98,16 @@ export class HTML {
       }
     });
 
-    const css = new CSS();
     for (const node of nodes) {
       tagName = node.tagName;
       if (node.hasAttributes() && node.getAttribute('style')) {
-        await css.process(node, uri);
+        await this.processStyleAttr(node, uri);
       }
 
       tagName = tagName.toLowerCase();
       switch (tagName) {
         case 'style': {
-          await css.process(node, uri);
+          await this.processStyleNode(node, uri);
           break;
         }
         case 'link': {
@@ -437,6 +436,34 @@ export class HTML {
     });
   }
 
+  async processStyleAttr(node: HTMLElement, baseURL = ''): Promise<void> {
+    if (!node.hasAttribute('style')) {
+      return;
+    }
+
+    const style = node.getAttribute('style') || '';
+    const newStyle = await css.process(style, baseURL);
+    if (newStyle.length > 0) {
+      node.setAttribute('style', newStyle);
+    }
+
+    return;
+  }
+
+  async processStyleNode(node: HTMLElement, baseURL = ''): Promise<void> {
+    const style = node.innerHTML;
+    if (!style || style.length === 0) {
+      return;
+    }
+
+    const newStyle = await css.process(style, baseURL);
+    if (newStyle.length > 0) {
+      node.innerHTML = newStyle;
+    }
+
+    return;
+  }
+
   async processLinkNode(node: HTMLElement, baseURL = ''): Promise<void> {
     if (!node.hasAttribute('href')) {
       return;
@@ -458,7 +485,7 @@ export class HTML {
 
     // Replace <link> to <style>
     if (['preload', 'stylesheet'].includes(rel.toLowerCase())) {
-      await new URI().process(href, baseURL).then((data) => {
+      await uri.process(href, baseURL).then((data) => {
         node.outerHTML = `<style type="text/css">${data}</style>`;
       });
     }
@@ -492,7 +519,7 @@ export class HTML {
       return;
     }
 
-    await new URI().process(src, baseURL).then((data) => {
+    await uri.process(src, baseURL).then((data) => {
       node.removeAttribute('src');
       node.textContent = data;
     });

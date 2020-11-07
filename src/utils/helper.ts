@@ -1,5 +1,5 @@
 // import fs from 'fs';
-import { HTTP } from './http';
+import { http } from './http';
 
 export const isValidURL = (uri: string): boolean => {
   if (!uri || uri.length < 3) {
@@ -63,19 +63,19 @@ export const createFileName = (uri: string): string => {
   }
 
   const pathname = url.pathname.replace(/\//g, '-').replace(/^-+|-+$/gm, '');
-  const fullpath = `${now}-${hostname}-${pathname}`.replace(/^-+|-+$/gm, '');
+  const fullpath = `${now}-${hostname}-${pathname}`.replace(/^-+|-+$/gm, '').replace(/\.(htm|html)$/gm, '');
 
   return `${fullpath}.${extension}`;
 };
 
 export const convertToData = async (uri: string): Promise<string> => {
   if (!isValidURL(uri)) {
-    return '';
+    return uri;
   }
 
-  const resource = await new HTTP().setResponseType('arraybuffer').fetch(uri);
+  const resource = await http.setResponseType('arraybuffer').fetch(uri);
   if (!resource || typeof resource !== 'object' || !Object.prototype.hasOwnProperty.call(resource, 'data')) {
-    return '';
+    return uri;
   }
 
   const encoded = Buffer.from(resource.data).toString('base64');

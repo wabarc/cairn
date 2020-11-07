@@ -1,6 +1,6 @@
 import { Webpage } from '../src/types/cairn';
 import { HTML } from '../src/html';
-import { CSS } from '../src/css';
+import { css } from '../src/css';
 import { server } from './server';
 import { JSDOM } from 'jsdom';
 
@@ -344,15 +344,13 @@ describe('HTML', () => {
 });
 
 describe('CSS', () => {
-  const css = new CSS();
-
   it('should process url resource to base64 within inline style', async () => {
     const testContent = `<link rel="icon" href="favicon.ico" style="margin:0;background-image:url('https://github.com/favicon.ico');"></link>`;
     document.getElementsByTagName('body')[0].innerHTML = testContent;
 
     expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:*\/.*;base64/gm));
 
-    await css.process(document.querySelector('link'));
+    await css.process(document.querySelector('link'), '');
 
     // expect(dom.serialize()).toEqual(expect.stringMatching(/data:*\/.*;base64/gm));
     expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
@@ -373,18 +371,18 @@ describe('CSS', () => {
 
     expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:image\/.*;base64/gm));
 
-    await css.process(document.querySelector('head'));
+    const newStyle = await css.process(document.querySelector('head > style').innerHTML, '');
 
-    expect(dom.serialize()).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
-    expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
+    expect(newStyle).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
+    expect(newStyle).toEqual(expect.stringMatching(/background-image:url/gm));
   });
 
   it('should process style url resource to base64 within element', async () => {
     expect(dom.serialize()).toEqual(expect.not.stringMatching(/data:image\/.*;base64/gm));
 
-    await css.process(document.querySelector('body'));
+    const newStyle = await css.process(document.querySelector('body > style').innerHTML, '');
 
-    expect(dom.serialize()).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
-    expect(dom.serialize()).toEqual(expect.stringMatching(/background-image:url/gm));
+    expect(newStyle).toEqual(expect.stringMatching(/data:image\/.*;base64/gm));
+    expect(newStyle).toEqual(expect.stringMatching(/background-image:url/gm));
   });
 });
