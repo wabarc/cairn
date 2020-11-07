@@ -3,11 +3,11 @@ name: Testing
 on:
   push:
     branches:
-      - master
+      - main
       - jsdom
       - cheerio
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     types: [ opened, synchronize, reopened ]
     paths:
       - "package.json"

@@ -65,4 +65,4 @@ Options:
 
 ## License
 
-This software is released under the terms of the GNU General Public License v3.0. See the [LICENSE](https://github.com/wabarc/cairn/blob/master/LICENSE) file for details.
+This software is released under the terms of the GNU General Public License v3.0. See the [LICENSE](https://github.com/wabarc/cairn/blob/main/LICENSE) file for details.
