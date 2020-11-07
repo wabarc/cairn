@@ -2,7 +2,10 @@ name: Testing
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - jsdom
+      - cheerio
   pull_request:
     branches: [ master ]
     types: [ opened, synchronize, reopened ]
