@@ -99,10 +99,11 @@ class Handler {
     if (program.userAgent) this.opt.userAgent = program.userAgent;
     if (program.timeout) this.opt.timeout = parseInt(program.timeout);
 
-    if (program.noJs) this.opt.disableJS = true;
-    if (program.noCss) this.opt.disableCSS = true;
-    if (program.noEmbeds) this.opt.disableEmbeds = true;
-    if (program.noMedias) this.opt.disableMedias = true;
+    // `no-` to set the option value to false when used.
+    this.opt.disableJS = !program.js;
+    this.opt.disableCSS = !program.css;
+    this.opt.disableEmbeds = !program.embeds;
+    this.opt.disableMedias = !program.medias;
 
     this.url = program.args;
 
