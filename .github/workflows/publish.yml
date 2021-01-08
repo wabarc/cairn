@@ -7,6 +7,7 @@ on:
 
 jobs:
   prepare:
+    if: github.repository == 'wabarc/cairn'
     runs-on: ubuntu-latest
     name: Prepare
     steps:
