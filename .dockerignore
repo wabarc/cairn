@@ -1,0 +1,12 @@
+.git
+.github
+.editorconfig
+.eslintignore
+.eslintrc
+.gitignore
+.prettierrc
+jest.config.js
+
+dist
+test
+node_modules
