@@ -75,12 +75,12 @@ export class HTML {
     $.root()
       .find(tags)
       .each((_, e) => {
-        const tagName = e.name;
+        const $elem = $(e);
+        const tagName = $elem.get(0).tagName;
         if (typeof tagName !== 'string') {
           return;
         }
 
-        const $elem = $(e);
         switch (tagName.toLowerCase()) {
           case 'link': {
             const rel = $elem.attr('rel');
@@ -107,28 +107,29 @@ export class HTML {
       });
 
     for (const node of nodes) {
-      const tagName = node.name;
-      if (Object.entries(node.attribs).length > 0 && $(node).attr('style')) {
-        await this.processStyleAttr($(node), uri);
+      const $node = $(node);
+      const tagName = $node.get(0).tagName;
+      if ($node.attr('style') !== undefined) {
+        await this.processStyleAttr($node, uri);
       }
 
       switch (tagName.toLowerCase()) {
         case 'style': {
-          await this.processStyleNode($(node), uri);
+          await this.processStyleNode($node, uri);
           break;
         }
         case 'link': {
-          await this.processLinkNode($(node), uri);
+          await this.processLinkNode($node, uri);
           break;
         }
         case 'script': {
-          await this.processScriptNode($(node), uri);
+          await this.processScriptNode($node, uri);
           break;
         }
         case 'iframe':
         case 'embed':
         case 'object': {
-          await this.processEmbedNode($(node), uri);
+          await this.processEmbedNode($node, uri);
           break;
         }
         case 'img':
@@ -137,7 +138,7 @@ export class HTML {
         case 'video':
         case 'audio':
         case 'source': {
-          await this.processMediaNode($(node), uri);
+          await this.processMediaNode($node, uri);
           break;
         }
       }
@@ -231,12 +232,14 @@ export class HTML {
    */
   convertNoScriptToDiv($: cheerio.Root, markNewDiv = false): void {
     if (markNewDiv) {
+      let $node;
       $('noscript').each((_, e) => {
-        e.tagName = 'div';
-        $(e).attr('data-cairn-noscript', 'true');
+        $node = $(e);
+        $node.get(0).tagName = 'div';
+        $node.attr('data-cairn-noscript', 'true');
       });
     } else {
-      $('noscript').each((_, e) => (e.tagName = 'div'));
+      $('noscript').each((_, e) => ($(e).get(0).tagName = 'div'));
     }
   }
 
@@ -247,7 +250,8 @@ export class HTML {
    * @api private
    */
   removeComments($: cheerio.Root): void {
-    $('*')
+    $.root()
+      .find('*')
       .contents()
       .filter((_, e) => {
         return e.type === 'comment';
@@ -265,10 +269,12 @@ export class HTML {
    */
   convertLazyImageAttrs($: cheerio.Root): void {
     // Convert img attributes
+    let $e;
     $('img,picture,figure').each((_, e) => {
-      const src = $(e).attr('src');
-      const srcset = $(e).attr('srcset');
-      const tagName = e.tagName.toLowerCase();
+      $e = $(e);
+      const src = $e.attr('src');
+      const srcset = $e.attr('srcset');
+      const tagName = $e.get(0).tagName.toLowerCase();
 
       // In some sites (e.g. Kotaku), they put 1px square image as data uri in
       // the src attribute. So, here we check if the data uri is too short,
@@ -279,11 +285,11 @@ export class HTML {
       // let srcCouldBeRemoved: boolean = false;
       // todo
 
-      if ((src || srcset) && $(e).attr('loading') === 'lazy') {
+      if ((src || srcset) && $e.attr('loading') === 'lazy') {
         return;
       }
 
-      for (const [attrName, attrVal] of Object.entries(e.attribs)) {
+      for (const [attrName, attrVal] of Object.entries($e.get(0).attribs)) {
         if (attrName === undefined || typeof attrVal !== 'string') {
           continue;
         }
@@ -358,9 +364,11 @@ export class HTML {
       }
     };
 
+    let $e;
     $('*').each((_, e) => {
-      let tagName = e.tagName;
-      if (typeof tagName !== 'string' || Object.entries(e.attribs).length === 0) {
+      $e = $(e);
+      let tagName = $e.get(0).tagName;
+      if (typeof tagName !== 'string' || Object.entries($e.get(0).attribs).length === 0) {
         return;
       }
 
@@ -454,7 +462,7 @@ export class HTML {
    */
   setSource($: cheerio.Root, url: string): void {
     // Append the source url meta
-    $('head').append(`<meta property="wayback:source:url" content="${url}">`);
+    $('head').append(`<meta property="source:url" content="${url}">`);
   }
 
   async processStyleAttr(node: cheerio.Cheerio, baseURL = ''): Promise<void> {
@@ -604,9 +612,11 @@ export class HTML {
   }
 
   revertConvertedNoScript($: cheerio.Root): void {
+    let $e;
     $('div').each((_, e) => {
-      if ($(e).attr('data-cairn-noscript') === 'true') {
-        e.tagName = 'noscript';
+      $e = $(e);
+      if ($e.attr('data-cairn-noscript') === 'true') {
+        $e.get(0).tagName = 'noscript';
       }
     });
     return;
