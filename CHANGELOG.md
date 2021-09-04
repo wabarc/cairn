@@ -6,6 +6,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2021-09-04
+
+### Added
+- Add Dockerfile
+- Run testing on Node 1.16.x
+- Add codeql analysis workflow
+
+### Changed
+- Refine release workflow
+- Refine testing workflow
+- Refine parameters
+- Upgrade linter to v4
+- Limit repository as condition of publish workflow
+- Run test without cache
+- Upgrade dependencies
+- Bump actions/setup-node from v2.1.2 to v2.1.4
+- Bump github/super-linter from v3.13.5 to v3.14.3
+- Set linter workflow default branch
+- Change default branch to main
+
+### Fixed
+- Fix dom selector
+- Fix set meta
+
 ## [2.1.2] - 2020-11-01
 
 ### Fixed
