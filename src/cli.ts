@@ -6,33 +6,34 @@ import { isValidURL, createFileName } from './utils';
 import { statSync, writeFile } from 'fs';
 
 class Handler {
-  private opt: Options;
-  private url: string[];
+  private opts: Options;
+  private urls: string[];
 
   constructor() {
-    this.url = [];
-    this.opt = {};
+    this.urls = [];
+    this.opts = {};
   }
 
   async main() {
     const program = this.parser();
+    const options = program.opts();
 
-    if (this.url.length < 1) {
+    if (this.urls.length < 1) {
       // Output help information and exit immediately.
       program.help();
     }
 
     let filepath = '';
-    if (program.output && program.output !== '-') {
-      if (!statSync(program.output)) {
-        console.warn('custom output not exists, path: ' + program.output);
+    if (options.output && options.output !== '-') {
+      if (!statSync(options.output)) {
+        console.warn('custom output not exists, path: ' + options.output);
         process.exit(1);
       }
-      filepath = program.output + '/';
+      filepath = options.output + '/';
     }
 
     const output = async (url: string, filename: string, content: string) => {
-      if (program.output === '-') {
+      if (options.output === '-') {
         console.info(content);
       } else {
         writeFile(filename, content, (err) => {
@@ -46,7 +47,7 @@ class Handler {
     };
 
     const cairn = new Archiver();
-    for (const url of this.url) {
+    for (const url of this.urls) {
       if (!isValidURL(url)) {
         console.info(`${url} => request url is not specified\n`);
         continue;
@@ -55,7 +56,7 @@ class Handler {
 
       await cairn
         .request({ url: url })
-        .options(this.opt)
+        .options(this.opts)
         .archive()
         .then(async (archived) => {
           if (!archived.webpage || typeof archived.webpage.root !== 'function') {
@@ -96,16 +97,17 @@ class Handler {
 
     program.parse(process.argv);
 
-    if (program.userAgent) this.opt.userAgent = program.userAgent;
-    if (program.timeout) this.opt.timeout = parseInt(program.timeout);
+    const options = program.opts();
+    if (options.userAgent) this.opts.userAgent = options.userAgent;
+    if (options.timeout) this.opts.timeout = parseInt(options.timeout);
 
     // `no-` to set the option value to false when used.
-    this.opt.disableJS = !program.js;
-    this.opt.disableCSS = !program.css;
-    this.opt.disableEmbeds = !program.embeds;
-    this.opt.disableMedias = !program.medias;
+    this.opts.disableJS = !options.js;
+    this.opts.disableCSS = !options.css;
+    this.opts.disableEmbeds = !options.embeds;
+    this.opts.disableMedias = !options.medias;
 
-    this.url = program.args;
+    this.urls = program.args;
 
     return program;
   }

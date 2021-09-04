@@ -23,7 +23,7 @@ export class Archiver implements ArchiverImpl {
   request(r: Requests): this {
     const { url } = r;
     if (!isValidURL(url)) {
-      err('request url is not specified');
+      err(`request url: ${url} is not specified`);
     }
 
     this.req.url = url;
