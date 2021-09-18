@@ -7,6 +7,8 @@ on:
     branches: [ main ]
     types: [ opened, synchronize, reopened ]
 
+permissions: write-all
+
 jobs:
   lint:
     runs-on: ubuntu-latest
