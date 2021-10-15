@@ -50,7 +50,7 @@
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-jest": "^25.2.1",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.1.0",
     "jsdom": "^17.0.0",
