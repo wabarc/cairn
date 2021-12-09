@@ -15,10 +15,10 @@ jobs:
     name: Checkout, build
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Node 12.x
+    - name: Set up Node 16.x
       uses: actions/setup-node@v2
       with:
-        node-version: '12.x'
+        node-version: '16.x'
         registry-url: 'https://registry.npmjs.org'
 
     - name: Check out code into the Go module directory
@@ -30,14 +30,20 @@ jobs:
     - name: Build package
       run: yarn build
 
+    - name: Packaging
+      run: yarn package
+
     - name: Create artifact
-      run: tar -zcf ${{ env.PRODUCT }}-dist.tar.gz dist/*
+      run: tar -zcf ${{ env.PRODUCT }}-dist.tar.gz --exclude=dist/linux --exclude=dist/macos --exclude=dist/windows dist/*
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PRODUCT }}
-        path: ${{ env.PRODUCT }}-dist.tar.gz
+        path: |
+          ${{ env.PRODUCT }}-dist.tar.gz
+          build/Release/${{ env.PRODUCT }}*
+        if-no-files-found: error
 
   release:
     name: Create and upload release
@@ -81,7 +87,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
         body_path: gittaglogs.txt
-        files: ${{ env.PRODUCT }}/*${{ env.PRODUCT }}*
+        files: |
+          ${{ env.PRODUCT }}/*${{ env.PRODUCT }}*
+          ${{ env.PRODUCT }}/build/Release/${{ env.PRODUCT }}*
         prerelease: true
         draft: false
 
