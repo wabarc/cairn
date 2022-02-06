@@ -36,6 +36,12 @@ class Handler {
       if (options.output === '-') {
         console.info(content);
       } else {
+        content = `<!--
+  Page saved with @wabarc/cairn 
+  url: ${url}
+  saved date: ${new Date()}
+-->
+${content}`;
         writeFile(filename, content, (err) => {
           if (err) {
             console.warn(`${url} => ${err}`);
