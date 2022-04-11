@@ -40,7 +40,7 @@ jobs:
         node-version: '12.x'
         registry-url: 'https://registry.npmjs.org'
     - name: Download math result from prepare job
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: package
         path: package
@@ -65,7 +65,7 @@ jobs:
         # Defaults to the user or organization that owns the workflow file
         scope: '@wabarc'
     - name: Download math result from prepare job
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: package
         path: package
