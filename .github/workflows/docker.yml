@@ -6,13 +6,20 @@ on:
   push:
     tags:
       - v*
+    branches:
+      - 'main'
+      - 'develop'
 
-permissions: write-all
+permissions:
+  contents: read
 
 jobs:
   publish:
     name: Build and push Docker image
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      id-token: write
     steps:
       - name: Checkout default branch
         uses: actions/checkout@v2
