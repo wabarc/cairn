@@ -1,4 +1,4 @@
-FROM node:12-alpine as builder
+FROM node:18-alpine as builder
 
 #RUN wget -O- https://gobinaries.com/tj/node-prune | sh
 
@@ -12,7 +12,7 @@ RUN yarn install && yarn build
 RUN npm prune --production
 RUN yarn autoclean
 
-FROM node:12-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 

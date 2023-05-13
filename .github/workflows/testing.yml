@@ -5,13 +5,21 @@ on:
     branches:
       - "**"
   pull_request:
-    branches: [ main ]
-    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
     paths:
       - "package.json"
       - "**/*.ts"
       - "**/*.js"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

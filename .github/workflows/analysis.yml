@@ -1,0 +1,68 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+# ******** NOTE ********
+
+name: "Analysis"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+      - main
+  schedule:
+    - cron: '26 17 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  security-events: write
+
+jobs:
+  codeql:
+    name: CodeQL
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more:
+        # https://docs.github.com/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+    uses: wabarc/.github/.github/workflows/reusable-codeql.yml@main
+    with:
+      language: ${{ matrix.language }}
+
+  dependency-review:
+    name: Dependency Review
+    uses: wabarc/.github/.github/workflows/reusable-dependency-review.yml@main
+
+  trivy:
+    name: Trivy
+    uses: wabarc/.github/.github/workflows/reusable-trivy.yml@main
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      #actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    with:
+      scan-type: 'fs'
+      sarif: 'filesystem.sarif'
