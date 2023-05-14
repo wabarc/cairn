@@ -1,4 +1,7 @@
 import axios, { ResponseType } from 'axios';
+import { SocksProxyAgent } from 'socks-proxy-agent';
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { isValidURL } from '.';
 import chardet from 'chardet';
 import iconv from 'iconv-lite';
@@ -8,6 +11,14 @@ class HTTP {
   private responseType: ResponseType = 'arraybuffer';
 
   constructor() {
+    // Proxy environment not working for axios, reset it to avoid getting caught.
+    process.env.https_proxy = '';
+    process.env.http_proxy = '';
+    process.env.all_proxy = '';
+    process.env.HTTPS_PROXY = '';
+    process.env.HTTP_PROXY = '';
+    process.env.ALL_PROXY = '';
+
     const ua =
       'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36';
     if (!global.axios) {
@@ -52,8 +63,22 @@ class HTTP {
     return this;
   }
 
-  setOptions(args: { timeout: number }): this {
+  setOptions(args: { timeout?: number; proxy?: string }): this {
     if (args.timeout) global.axios.defaults.timeout = 1000 * args.timeout;
+
+    if (args.proxy) {
+      const proxy = new URL(args.proxy);
+      let agent;
+      if (proxy.protocol?.indexOf(`socks`) == 0) {
+        agent = new SocksProxyAgent(proxy.toString());
+      } else if (proxy.protocol?.indexOf(`https`) == 0) {
+        agent = new HttpsProxyAgent(proxy.toString());
+      } else if (proxy.protocol?.indexOf(`http`) == 0) {
+        agent = new HttpProxyAgent(proxy.toString());
+      }
+      global.axios.defaults.httpsAgent = agent;
+      global.axios.defaults.httpAgent = agent;
+    }
 
     return this;
   }
