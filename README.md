@@ -31,15 +31,16 @@ Usage: cairn [options] url1 [url2]...[urlN]
 CLI tool for saving web page as single HTML file
 
 Options:
-  -v, --version              output the current version
-  -o, --output <string>      path to save archival result
-  -u, --user-agent <string>  set custom user agent
-  -t, --timeout <number>     maximum time (in second) request timeout
-  --no-js                    disable JavaScript
-  --no-css                   disable CSS styling
-  --no-embeds                remove embedded elements (e.g iframe)
-  --no-medias                remove media elements (e.g img, audio)
-  -h, --help                 display help for command
+  -v, --version                         output the current version
+  -o, --output <string>                 path to save archival result
+  -u, --user-agent <string>             set custom user agent
+  -p, --proxy [protocol://]host[:port]  use this proxy
+  -t, --timeout <number>                maximum time (in second) request timeout
+  --no-js                               disable JavaScript
+  --no-css                              disable CSS styling
+  --no-embeds                           remove embedded elements (e.g iframe)
+  --no-medias                           remove media elements (e.g img, audio)
+  -h, --help                            display help for command
 ```
 
 ### As npm package
@@ -56,7 +57,7 @@ const cairn = new Cairn();
 
 cairn
   .request({ url: url })
-  .options({ userAgent: 'Cairn/2.0.0' })
+  .options({ userAgent: 'Cairn/2.0.0', proxy: 'socks5://127.0.0.1:1080' })
   .archive()
   .then((archived) => {
     console.log(archived.url, archived.webpage.html());
@@ -68,6 +69,7 @@ cairn
 
 ##### cairn#request({ url: string }): this
 ##### cairn#options({}): this
+- proxy?: string;
 - userAgent?: string;
 - disableJS?: boolean;
 - disableCSS?: boolean;
@@ -97,6 +99,7 @@ cairn
 
 ```javascript
 {
+  proxy: 'socks5://127.0.0.1:1080',
   userAgent: 'Cairn/2.0.0',
 
   disableJS: true,
