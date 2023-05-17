@@ -87,6 +87,7 @@ class Handler {
     program.option('-o, --output <string>', 'path to save archival result');
 
     program.option('-u, --user-agent <string>', 'set custom user agent');
+    program.option('-p, --proxy [protocol://]host[:port]', 'use this proxy');
     program.option('-t, --timeout <number>', 'maximum time (in second) request timeout');
 
     program
@@ -98,6 +99,7 @@ class Handler {
     program.parse(process.argv);
 
     const options = program.opts();
+    if (options.proxy) this.opts.proxy = options.proxy;
     if (options.userAgent) this.opts.userAgent = options.userAgent;
     if (options.timeout) this.opts.timeout = parseInt(options.timeout);
 
