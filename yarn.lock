@@ -946,6 +946,13 @@ agent-base@6:
   dependencies:
     debug "4"
 
+agent-base@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.0.1.tgz#ec4df4e6406bdf71490ade302ea45f86bf365ea9"
+  integrity sha512-V9to8gr2GK7eA+xskWGAFUX/TLSQKuH2TI06c/jGLL6yLp3oEjtnqM7a5tPV9fC1rabLeAgThZeBwsYX+WWHpw==
+  dependencies:
+    debug "^4.3.4"
+
 ajv@^6.10.0, ajv@^6.12.4:
   version "6.12.6"
   resolved "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
@@ -1602,6 +1609,13 @@ debug@^4.3.2:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
   integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==
+  dependencies:
+    ms "2.1.2"
+
+debug@^4.3.4:
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
+  integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
   dependencies:
     ms "2.1.2"
 
@@ -2398,12 +2412,28 @@ http-proxy-agent@^5.0.0:
     agent-base "6"
     debug "4"
 
+http-proxy-agent@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-6.0.1.tgz#c18aa52daa625a9bd00243f57252fd44e86ff40b"
+  integrity sha512-rD8wrfJHbnVll9lkIpQH3vDbKON1Ssciggwydom/r89HLBXEqdMhL6wx7QF5WePDPSr0OdoztdXoojbrXadG5Q==
+  dependencies:
+    agent-base "^7.0.1"
+    debug "^4.3.4"
+
 https-proxy-agent@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/https-proxy-agent/-/https-proxy-agent-5.0.0.tgz"
   integrity sha512-EkYm5BcKUGiduxzSt3Eppko+PiNWNEpa4ySk9vTC6wDsQJW9rHSa+UhGNJoRYp7bz6Ht1eaRIa6QaJqO5rCFbA==
   dependencies:
     agent-base "6"
+    debug "4"
+
+https-proxy-agent@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-6.1.0.tgz#e00f1efb849171ea349721481d3bcbef03ab4d13"
+  integrity sha512-rvGRAlc3y+iS7AC9Os2joN91mX8wHpJ4TEklmHHxr7Gz2Juqa7fJmJ8wWxXNpTaRt56MQTwojxV5d82UW/+jwg==
+  dependencies:
+    agent-base "^7.0.1"
     debug "4"
 
 human-signals@^2.1.0:
@@ -2506,6 +2536,11 @@ into-stream@^6.0.0:
   dependencies:
     from2 "^2.3.0"
     p-is-promise "^3.0.0"
+
+ip@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.0.tgz#4cf4ab182fee2314c75ede1276f8c80b479936da"
+  integrity sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==
 
 is-binary-path@~2.1.0:
   version "2.1.0"
@@ -4053,6 +4088,28 @@ slice-ansi@^4.0.0:
     ansi-styles "^4.0.0"
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
+
+smart-buffer@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/smart-buffer/-/smart-buffer-4.2.0.tgz#6e1d71fa4f18c05f7d0ff216dd16a481d0e8d9ae"
+  integrity sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==
+
+socks-proxy-agent@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/socks-proxy-agent/-/socks-proxy-agent-8.0.1.tgz#ffc5859a66dac89b0c4dab90253b96705f3e7120"
+  integrity sha512-59EjPbbgg8U3x62hhKOFVAmySQUcfRQ4C7Q/D5sEHnZTQRrQlNKINks44DMR1gwXp0p4LaVIeccX2KHTTcHVqQ==
+  dependencies:
+    agent-base "^7.0.1"
+    debug "^4.3.4"
+    socks "^2.7.1"
+
+socks@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/socks/-/socks-2.7.1.tgz#d8e651247178fde79c0663043e07240196857d55"
+  integrity sha512-7maUZy1N7uo6+WVEX6psASxtNlKaNVMlGQKkG/63nEDdLOWNbiUMoLK7X4uYoLhQstau72mLgfEWcXcwsaHbYQ==
+  dependencies:
+    ip "^2.0.0"
+    smart-buffer "^4.2.0"
 
 source-map-support@^0.5.6:
   version "0.5.19"

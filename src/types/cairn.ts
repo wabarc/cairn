@@ -22,6 +22,7 @@ export declare type Requests = {
 export declare type Options = {
   cache?: object;
 
+  proxy?: string;
   userAgent?: string;
 
   disableJS?: boolean;

@@ -78,8 +78,8 @@ export class Archiver implements ArchiverImpl {
       http.setHeader('User-Agent', this.opt.userAgent);
     }
 
-    if (this.opt.timeout) {
-      http.setOptions({ timeout: this.opt.timeout });
+    if (this.opt.timeout || this.opt.proxy) {
+      http.setOptions({ timeout: this.opt.timeout, proxy: this.opt.proxy });
     }
 
     return await http.setResponseType('arraybuffer').fetch(url);

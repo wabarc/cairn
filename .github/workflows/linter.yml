@@ -11,6 +11,9 @@ on:
 
 permissions: write-all
 
+env:
+  JAVASCRIPT_ES_CONFIG_FILE: .eslintrc
+
 jobs:
   lint:
     runs-on: ubuntu-latest
