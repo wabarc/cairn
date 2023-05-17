@@ -5,7 +5,12 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-permissions: write-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   prepare:
@@ -13,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Prepare
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+    - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
       with:
-        node-version: '12.x'
+        node-version: '18.x'
         registry-url: 'https://registry.npmjs.org'
     - run: yarn install
     - run: yarn run test
@@ -33,11 +38,11 @@ jobs:
     name: Publish to NPM
     needs: prepare
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
     # Setup .npmrc file to publish to npm
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
       with:
-        node-version: '12.x'
+        node-version: '18.x'
         registry-url: 'https://registry.npmjs.org'
     - name: Download math result from prepare job
       uses: actions/download-artifact@v2
@@ -56,11 +61,11 @@ jobs:
     name: Publish to GitHub
     needs: prepare
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
     # Setup .npmrc file to publish to GitHub Packages
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
       with:
-        node-version: '12.x'
+        node-version: '18.x'
         registry-url: 'https://npm.pkg.github.com'
         # Defaults to the user or organization that owns the workflow file
         scope: '@wabarc'
