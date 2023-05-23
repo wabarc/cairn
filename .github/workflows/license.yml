@@ -1,0 +1,30 @@
+# Copyright 2020 Wayback Archiver. All rights reserved.
+# Use of this source code is governed by the GNU GPL v3
+# license that can be found in the LICENSE file.
+#
+name: License
+
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+  pull_request:
+    branches:
+      - '**'
+    types: [ opened, synchronize, reopened ]
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  license:
+    # Disable license checker in current stage
+    if: false
+    name: License Checker
+    uses: wabarc/.github/.github/workflows/reusable-license.yml@main

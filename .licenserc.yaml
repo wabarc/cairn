@@ -1,0 +1,48 @@
+# Copyright 2020 Wayback Archiver. All rights reserved.
+# Use of this source code is governed by the GNU GPL v3
+# license that can be found in the LICENSE file.
+#
+header:
+  license:
+    spdx-id: GPL-3.0-or-later
+    copyright-owner: Wayback Archiver
+    software-name: cairn
+    content: |
+      Copyright 2023 Wayback Archiver. All rights reserved.
+      Use of this source code is governed by the GNU GPL v3
+      license that can be found in the LICENSE file.
+
+  paths-ignore:
+    - '.github/ISSUE_TEMPLATE'
+    - '.github/PULL_REQUEST_TEMPLATE'
+    - '.github/linters/.dockerfilelintrc'
+    - '.gitattributes'
+    - '.semgrepignore'
+    - '.gitignore'
+    - '.dockerignore'
+    - '.npmignore'
+    - '.eslintrc'
+    - '.eslintignore'
+    - '.prettierrc'
+    - '**/*.md'
+    - '**/*.out'
+    - '**/*.json'
+    - 'dist'
+    - 'test'
+    - '**/*.lock'
+    - 'LICENSE'
+    - 'Makefile'
+    - 'Procfile'
+    - 'codecov.yml'
+    - 'mkdocs.yml'
+
+  comment: on-failure
+
+  language:
+    TypeScript:
+      extensions:
+        - ".ts"
+
+dependency:
+  files:
+    - package.json
