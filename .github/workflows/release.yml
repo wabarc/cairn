@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  content: read
+  contents: read
 
 jobs:
   build:
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      content: write
+      contents: write
     steps:
     - name: Check out code base
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2

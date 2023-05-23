@@ -1,6 +1,6 @@
 {
   "name": "@wabarc/cairn",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Node package and CLI tool for saving web page as single HTML file",
   "main": "dist/cairn.js",
   "types": "dist/cairn.d.ts",

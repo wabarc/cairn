@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add proxy support
 
+### Changed
+- Reusable workflow
+- Upgrade dependencies
+
+### Fixed
+- Fix cannot ckeckout the code base when pull requests
+- Replace set-output with recommended env output
+
 ## [2.2.1] - 2021-09-09
 
 ### Changed
