@@ -1,3 +1,9 @@
+/*
+ * Copyright 2023 Wayback Archiver. All rights reserved.
+ * Use of this source code is governed by the MIT
+ * license that can be found in the LICENSE file.
+ */
+
 #!/usr/bin/env node
 import { Options } from './types/cairn';
 import { Command } from 'commander';
