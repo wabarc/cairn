@@ -35,7 +35,7 @@
     "utils"
   ],
   "author": "Wayback Archiver",
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/wabarc/cairn/issues"
   },
