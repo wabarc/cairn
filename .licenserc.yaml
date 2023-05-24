@@ -34,6 +34,7 @@ header:
     - 'dist'
     - 'test'
     - '**/*.lock'
+    - 'src/cli.ts'
     - 'LICENSE'
     - 'Makefile'
     - 'Procfile'
