@@ -130,4 +130,6 @@ for v2.x:
 
 ## License
 
+Cairn has been re-licensed under MIT since version 3.0.0. If you are using versions 2 and 1, you should note that it is licensed under GPL 3.0.
+
 This software is released under the terms of the MIT. See the [LICENSE](https://github.com/wabarc/cairn/blob/main/LICENSE) file for details.
