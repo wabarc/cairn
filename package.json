@@ -46,7 +46,7 @@
     "cheerio": "^1.0.0-rc.12",
     "commander": "^10.0.1",
     "http-proxy-agent": "^6.1.0",
-    "https-proxy-agent": "^6.2.0",
+    "https-proxy-agent": "^7.0.0",
     "iconv-lite": "^0.6.3",
     "nth-check": "^2.1.1",
     "socks-proxy-agent": "^8.0.1",
