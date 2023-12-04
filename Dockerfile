@@ -2,7 +2,7 @@
 # Use of this source code is governed by the MIT
 # license that can be found in the LICENSE file.
 
-FROM node:18-alpine as builder
+FROM node:20-alpine as builder
 
 #RUN wget -O- https://gobinaries.com/tj/node-prune | sh
 
@@ -16,7 +16,7 @@ RUN yarn install && yarn build
 RUN npm prune --production
 RUN yarn autoclean
 
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
