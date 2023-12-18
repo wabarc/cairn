@@ -52,7 +52,7 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Set up Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+      uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
       with:
         node-version: ${{ matrix.node-version }}
         registry-url: 'https://registry.npmjs.org'
