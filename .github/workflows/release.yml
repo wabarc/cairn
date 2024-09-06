@@ -67,7 +67,7 @@ jobs:
         fetch-depth: 0
 
     - name: Download math result from build and checksum jobs
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      uses: actions/download-artifact@v4.1.7 # v3.0.2
       with:
         name: ${{ env.PRODUCT }}
         path: ${{ env.PRODUCT }}
@@ -110,7 +110,7 @@ jobs:
     needs: [release]
     steps:
     - name: Download artifact
-      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      uses: actions/download-artifact@v4.1.7 # v3.0.2
       with:
         name: release-note
         path: .
