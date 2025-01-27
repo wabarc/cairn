@@ -46,7 +46,7 @@ jobs:
       run: tar -zcf ${{ env.PRODUCT }}-dist.tar.gz --exclude=dist/linux --exclude=dist/macos --exclude=dist/windows dist/*
 
     - name: Upload artifact
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
       with:
         name: ${{ env.PRODUCT }}
         path: |
@@ -86,7 +86,7 @@ jobs:
         echo -e "\n${MORE}" | tee -a release-note.md > /dev/null
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: release-note
         path: release-note.md
