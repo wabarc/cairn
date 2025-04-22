@@ -30,7 +30,7 @@ jobs:
       id-token: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@2e205a28d0e1da00c5f53b161f4067b052c61f34 # v1.5.0
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: block
           disable-telemetry: true
